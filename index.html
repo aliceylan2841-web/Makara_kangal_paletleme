@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Palet Düzeni Hesaplayıcı – Kangal & Makara</title>
+  <meta name="description" content="Kangal ve makara için palet düzeni, aparat seçimi, kat ve yükseklik hesaplayıcı." />
+  <meta name="author" content="Acamay" />
+  <meta name="theme-color" content="#001742" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Palet Düzeni" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="stylesheet" href="assets/app.css" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
+    /* Özel kaydırma çubuğu */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #e2e8f0;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 4px;
+    }
+    .hesapla-btn { width: 100%; padding: 1rem; border-radius: 1rem; background: #059669; color: #fff; font-weight: 800; font-size: 1.1rem; letter-spacing: .05em; box-shadow: 0 4px 14px rgba(5,150,105,.35); cursor: pointer; }
+    .hesapla-btn:hover { background: #047857; }
+    input[type="range"] {
+      accent-color: #1e3a8a;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- GİRİŞ SAYFASI -->
+  <!-- KANGAL HESAPLAYICI -->
+  <div id="viewKangal" data-step="res" style="display:none" class="flex-col flex-1">
+
+  <!-- Üst Başlık (Header) -->
+  <header class="bg-slate-900 text-white shadow-md border-b-4 border-amber-500">
+    <div class="max-w-7xl mx-auto px-4 py-3.5 sm:px-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+      <div class="flex items-center gap-3">
+        <img src="icons/icon-96.png" alt="Acamay" width="40" height="40" class="w-10 h-10 rounded-xl shrink-0" />
+        
+        <div class="bg-amber-500 text-slate-950 font-extrabold px-2.5 py-1.5 rounded-lg text-xs sm:text-sm tracking-wider shadow-sm">
+          PL-F-010
+        </div>
+        <div>
+          <h1 class="text-base sm:text-xl font-bold tracking-tight leading-snug">
+            Kangal Palet Düzeni & Taban Dizilim Hesaplayıcı
+          </h1>
+          <p class="text-xs text-slate-300">Euro Palet 80×120 cm (15 cm yüksekliğinde) • Yapışık dizilim • Dış shrink uyumlu</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 self-start sm:self-auto">
+        <button type="button" onclick="showView('makara')" class="inline-flex items-center gap-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold px-3.5 py-2 rounded-lg cursor-pointer">Makara Hesabı ▸</button>
+        <button onclick="toggleRefModal()" class="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs font-semibold px-3.5 py-2 rounded-lg border border-slate-600 transition cursor-pointer">
+          <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+          </svg>
+          PL-F-010 Referans Tablosu
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 py-4 sm:px-6 space-y-4">
+
+    <!-- ÖZET ŞERİDİ: aranan bilgiler önde -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Kangal Dış Çapı</span>
+        <div class="mt-1"><span id="resOuterW" class="text-3xl font-extrabold text-slate-900">23</span> <span class="text-sm font-bold text-slate-500">cm</span></div>
+        <div id="resOuterSub" class="text-[11px] text-slate-500 mt-0.5"></div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Taban Adedi</span>
+        <div id="resBaseCount" class="text-3xl font-extrabold text-blue-900 mt-1">15 Adet</div>
+        <div id="resTableRefSub" class="text-[11px] text-slate-500 mt-0.5"></div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 shadow-sm border-2 border-emerald-500/50">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Palet Toplamı</span>
+        <div class="mt-1"><span id="resTotalCoils" class="text-3xl font-extrabold text-emerald-700">105</span> <span class="text-sm font-bold text-slate-600">Kangal</span></div>
+        <div id="resTotalMeters" class="text-[11px] font-semibold text-slate-600 mt-0.5"></div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Palet Yüksekliği</span>
+        <div id="resStackHeight" class="text-3xl font-extrabold text-emerald-700 mt-1">98 cm</div>
+        <div class="text-[11px] text-slate-500 mt-0.5"><span id="resLayerCount">7 Kat</span> • palet 15 cm + kat×aparat</div>
+      </div>
+    </section>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <!-- SOL: girdiler -->
+      <div class="k-left lg:col-span-5 space-y-4">
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-blue-700"></span>1. Kablo & Ölçü</h2>
+            <div class="inline-flex rounded-xl bg-slate-100 p-1 border border-slate-200">
+              <button id="btnModeCable" onclick="setMode('cable')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-900 text-white shadow-sm cursor-pointer">Kablo & Metraj</button>
+              <button id="btnModeDirect" onclick="setMode('direct')" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-600 cursor-pointer">Ölçülen Genişlik</button>
+            </div>
+          </div>
+          <div id="panelCable" class="space-y-3">
+            <div>
+              <label for="selectPreset" class="block text-xs font-bold text-slate-700 mb-1">Hızlı Kablo Seçimi</label>
+              <select id="selectPreset" onchange="applyCablePreset(this.value)" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-semibold"></select>
+              <div id="presetNote" class="text-[11px] text-slate-500 mt-1"></div>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+              <div><label for="inputDiameter" class="block text-[11px] font-bold text-slate-700 mb-1">Kablo Çapı (mm)</label><input type="text" inputmode="decimal" id="inputDiameter" value="8,2" oninput="calculate()" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-800" /></div>
+              <div><label for="inputLength" class="block text-[11px] font-bold text-slate-700 mb-1">Metraj (m)</label><input type="text" inputmode="decimal" id="inputLength" value="100" oninput="calculate()" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-800" /></div>
+              <div><label for="inputCoilKg" class="block text-[11px] font-bold text-slate-700 mb-1">Kangal kg (ops.)</label><input type="text" inputmode="decimal" id="inputCoilKg" placeholder="50 üzeri → 5 sıra" oninput="calculate()" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-800" /></div>
+            </div>
+          </div>
+          <div id="panelDirect" class="hidden bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <div class="flex items-center justify-between mb-2">
+              <label for="inputOuterSlider" class="text-xs font-bold text-slate-700">Ölçülen Kangal Dış Genişliği</label>
+              <div class="flex items-center gap-1.5"><input type="number" id="inputOuterNumber" value="25" min="18" max="75" step="1" oninput="syncOuterFromNumber()" class="w-20 px-2.5 py-1 text-center font-extrabold text-blue-900 bg-white border border-slate-300 rounded-lg" /><span class="text-xs font-bold text-slate-600">cm</span></div>
+            </div>
+            <input type="range" id="inputOuterSlider" value="25" min="18" max="75" step="1" oninput="syncOuterFromSlider()" class="w-full h-2 bg-slate-300 rounded-lg cursor-pointer" />
+            <div class="flex justify-between text-[11px] font-medium text-slate-500 mt-1"><span>18 (Yeni)</span><span>41 (Orta)</span><span>51–75 (Büyük)</span></div>
+          </div>
+          <div>
+            <label for="selectSales" class="block text-xs font-bold text-slate-700 mb-1">Satış Tipi (Palet & Shrink)</label>
+            <select id="selectSales" onchange="calculate()" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-semibold">
+              <option value="domestic">İç Piyasa → Euro Palet + Baskılı Shrink</option>
+              <option value="export">İhracat → EPAL Palet + Şeffaf Shrink</option>
+            </select>
+          </div>
+        </section>
+
+        <section class="k-res bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
+          <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>2. Sarım Aparatı & Dizilim</h2>
+          <div class="flex flex-wrap gap-2">
+            <select id="selectAparat" onchange="calculate()" class="flex-1 min-w-[180px] px-3 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-semibold"></select>
+            <span id="aparatIcon" class="inline-flex items-center gap-1.5 px-2 py-1 rounded-xl bg-amber-50 border border-amber-200 text-[11px] font-bold text-amber-900"></span>
+            <button type="button" onclick="document.getElementById('aparatForm').classList.toggle('hidden')" class="px-3 py-2 text-xs font-bold rounded-xl bg-blue-900 text-white cursor-pointer">+ Aparat</button>
+            <button type="button" id="btnRemoveAparat" onclick="removeAparat()" class="hidden px-3 py-2 text-xs font-bold rounded-xl bg-red-600 text-white cursor-pointer">− Çıkar</button>
+          </div>
+          <div id="aparatForm" class="hidden grid grid-cols-2 sm:grid-cols-4 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <input id="newApName" type="text" placeholder="Ad (ops.)" class="px-2.5 py-2 text-xs rounded-lg border border-slate-300" />
+            <input id="newApInner" type="text" inputmode="decimal" placeholder="Göbek Ø cm" class="px-2.5 py-2 text-xs rounded-lg border border-slate-300" />
+            <input id="newApH" type="text" inputmode="decimal" placeholder="Yükseklik cm" class="px-2.5 py-2 text-xs rounded-lg border border-slate-300" />
+            <button type="button" onclick="addAparat()" class="px-3 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white cursor-pointer">Ekle</button>
+          </div>
+          <div id="noteAparat" class="rounded-xl border-l-4 border-amber-500 bg-amber-50 px-3 py-2 text-xs text-amber-950 leading-relaxed"></div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+            <div><label for="selectLayers" class="block text-[11px] font-bold text-slate-700 mb-1">Kat Sınırı</label>
+              <select id="selectLayers" onchange="calculate()" class="w-full px-2 py-2.5 rounded-xl border border-slate-300 bg-white text-xs font-semibold">
+                <option value="7">Standart (7 Kat)</option><option value="6">Kalın Kesit (6 Kat)</option><option value="5">Ağır / 50 kg üzeri (5 Kat)</option><option value="8">8 Kat</option>
+              </select></div>
+            <div><label for="selectLayout" class="block text-[11px] font-bold text-slate-700 mb-1">Taban Deseni</label>
+              <select id="selectLayout" onchange="calculate()" class="w-full px-2 py-2.5 rounded-xl border border-slate-300 bg-white text-xs font-semibold">
+                <option value="auto">Otomatik (en verimli)</option><option value="hex">Şaşırtmalı (Hex)</option><option value="grid">Düz Blok</option>
+              </select></div>
+            <div><label class="block text-[11px] font-bold text-slate-700 mb-1">Palet Yüksekliği</label><input type="text" id="inputPalletH" value="15 cm" readonly tabindex="-1" class="w-full px-2 py-2.5 rounded-xl border border-slate-200 bg-slate-100 text-xs font-semibold text-slate-600" /></div>
+          </div>
+          <p class="text-[11px] text-slate-600">⚖️ <b>50 kg üzeri kangallar 5 sıra olacak şekilde paletlenecektir.</b></p>
+        </section>
+      </div>
+
+      <!-- SAĞ: palet dizilimi -->
+      <div class="k-res lg:col-span-7 space-y-4">
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+          <div class="flex flex-wrap items-start justify-between gap-2 pb-3 border-b border-slate-100">
+            <div>
+              <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>3. Palet Dizilimi</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Yapışık blok • Dikey 80×120 cm • Palete tam sığma</p>
+            </div>
+            <div class="flex flex-col items-end gap-1">
+              <span id="badgeStretchStatus" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300">✓ Uygun</span>
+              <span id="badgeLayoutType" class="text-[10px] font-semibold text-slate-500"></span>
+            </div>
+          </div>
+          <div class="mt-4 flex gap-3 items-start">
+            <div id="palBox" class="flex-1 min-w-0 flex flex-col items-center">
+              <div class="text-[11px] font-bold text-slate-500 mb-1">◄ 80 cm ►</div>
+              <div id="canvasWrapper" class="relative p-1.5 rounded-xl max-w-full overflow-hidden bg-emerald-500/10 border-2 border-dashed border-emerald-600 shadow-sm">
+                <div class="relative rounded-md shadow-inner border-2 border-amber-900/80 bg-amber-900 overflow-hidden"><canvas id="palletCanvas"></canvas></div>
+              </div>
+              <div class="text-[11px] font-bold text-slate-500 mt-1">120 cm boy • yeşil kesikli hat = taşmasız shrink sınırı</div>
+            </div>
+            <div class="shrink-0 w-24 bg-slate-50 rounded-xl p-2 border border-slate-200 flex flex-col items-center">
+              <span class="text-[10px] font-bold text-slate-700 text-center mb-2">Yan Kesit</span>
+              <div class="relative w-12 h-56 bg-slate-200 rounded-lg border border-slate-300 overflow-hidden flex flex-col justify-end">
+                <div class="absolute w-full border-t-2 border-dashed border-red-600 z-20" style="bottom: 84.6%;"><span class="absolute -top-4 right-0.5 text-[9px] font-extrabold text-red-600 bg-white/80 px-0.5 rounded">110</span></div>
+                <div id="heightStackVisual" class="w-full flex flex-col-reverse z-10"></div>
+                <div id="heightPalletBase" class="w-full bg-amber-800 border-t border-amber-950 text-[8px] text-amber-100 font-bold text-center flex items-center justify-center" style="height: 11.5%;">PALET</div>
+              </div>
+              <div id="heightSideLabel" class="mt-2 text-[11px] font-extrabold text-slate-800 text-center"></div>
+              <div id="heightStatusPill" class="mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800"></div>
+            </div>
+          </div>
+          <div class="pt-3 mt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-600">
+            <span class="inline-flex items-center gap-3"><span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-slate-800 inline-block"></span>Kablo</span><span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-50 border border-slate-500 inline-block"></span>Aparat göbeği</span></span>
+            <span id="resFill" class="text-emerald-700 font-semibold"></span>
+          </div>
+          <div class="mt-3">
+            <div class="flex items-center justify-between mb-1"><span class="text-[11px] font-bold text-slate-600 uppercase tracking-wide">PL-F-010 Referans Tablosu</span><button type="button" onclick="toggleRefModal()" class="text-[11px] font-semibold text-blue-800 underline cursor-pointer">Düzenle / Tam tablo</button></div>
+            <div id="refStrip" class="overflow-x-auto rounded-xl border border-slate-200 bg-white"></div>
+          </div>
+        </section>
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+          <h2 class="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">Notlar & Uyarılar</h2>
+          <div id="warningsContainer" class="space-y-2"></div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <footer class="text-center text-[11px] text-slate-400 py-3 tracking-widest">ACAMAY</footer>
+
+  <!-- PL-F-010 Tam Referans Tablosu Modalı -->
+  <div id="refModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[88vh] flex flex-col overflow-hidden border border-slate-200">
+      <div class="px-5 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <div><h3 class="font-bold text-base">PL-F-010 Kangal Paletleme Referans Tablosu (80×120 cm)</h3><p class="text-xs text-slate-300">Satıra dokunun: uygulamaya aktarır • ✎ düzelt • ✕ sil</p></div>
+        <button onclick="toggleRefModal()" class="text-slate-300 hover:text-white p-1.5 rounded-lg cursor-pointer text-lg">✕</button>
+      </div>
+      <div class="overflow-y-auto p-4">
+        <table class="w-full text-left border-collapse text-xs sm:text-sm">
+          <thead><tr class="bg-slate-100 text-slate-700 border-b border-slate-300"><th class="py-2.5 px-3 font-bold">Dış Genişlik</th><th class="py-2.5 px-3 font-bold">Aparat</th><th class="py-2.5 px-3 font-bold text-center">Göbek / Yük.</th><th class="py-2.5 px-3 font-bold text-center">Taban</th><th class="py-2.5 px-3 font-bold text-center">7 Kat</th><th></th></tr></thead>
+          <tbody id="refTableBody" class="divide-y divide-slate-200"></tbody>
+        </table>
+      </div>
+      <div id="refForm" class="hidden px-5 py-3 bg-amber-50 border-t border-amber-200 grid grid-cols-2 sm:grid-cols-5 gap-2 items-end">
+        <div><label class="text-[10px] font-bold text-slate-600">En az (cm)</label><input id="refMin" type="text" inputmode="decimal" class="w-full px-2 py-2 rounded-lg border border-slate-300 text-sm"></div>
+        <div><label class="text-[10px] font-bold text-slate-600">En çok (cm)</label><input id="refMax" type="text" inputmode="decimal" class="w-full px-2 py-2 rounded-lg border border-slate-300 text-sm"></div>
+        <div><label class="text-[10px] font-bold text-slate-600">Taban adedi</label><input id="refBase" type="text" inputmode="decimal" class="w-full px-2 py-2 rounded-lg border border-slate-300 text-sm"></div>
+        <button type="button" onclick="saveRefRow()" class="px-3 py-2 rounded-lg bg-emerald-600 text-white font-bold text-sm cursor-pointer">Kaydet</button>
+        <button type="button" onclick="document.getElementById('refForm').classList.add('hidden')" class="px-3 py-2 rounded-lg bg-slate-200 text-slate-800 font-bold text-sm cursor-pointer">İptal</button>
+      </div>
+      <div class="px-5 py-3 bg-slate-50 border-t border-slate-200 flex justify-between gap-2">
+        <div class="flex gap-2"><button onclick="openRefForm(-1)" class="px-3 py-2 bg-blue-900 text-white text-xs font-semibold rounded-xl cursor-pointer">+ Satır Ekle</button><button onclick="resetRef()" class="px-3 py-2 bg-slate-600 text-white text-xs font-semibold rounded-xl cursor-pointer">Varsayılana Dön</button></div>
+        <button onclick="toggleRefModal()" class="px-4 py-2 bg-slate-800 text-white text-xs font-semibold rounded-xl cursor-pointer">Kapat</button>
+      </div>
+    </div>
+  </div>
+
+  
+</div><!-- /viewKangal -->
+
+  <!-- MAKARA HESAPLAYICI -->
+  <div id="viewMakara" data-step="res" style="display:none" class="flex-col flex-1">
+    <header class="bg-slate-900 text-white shadow-md border-b-4 border-amber-500">
+      <div class="max-w-6xl mx-auto px-4 py-3 sm:px-6 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-3">
+        <img src="icons/icon-96.png" alt="Acamay" width="40" height="40" class="w-10 h-10 rounded-xl shrink-0" />
+        
+          <div class="bg-amber-500 text-slate-950 font-extrabold px-2.5 py-1.5 rounded-lg text-xs tracking-wider">MAKARA</div>
+          <div>
+            <h1 class="text-base sm:text-xl font-bold tracking-tight">Makara Palet Düzeni</h1>
+            <p class="text-xs text-slate-300">MDF • Karton • Plastik • Dikey palet, tam görünüm</p>
+          </div>
+        </div>
+        <button type="button" onclick="showView('kangal')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold px-3.5 py-2 rounded-lg cursor-pointer">Kangal Hesabı ▸</button>
+      </div>
+    </header>
+    <main class="flex-1 max-w-6xl w-full mx-auto px-3 py-4 sm:px-6 grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <div class="lg:col-span-7 space-y-4">
+<!-- 1. HESAP & SEÇİM -->
+      <section class="lg:col-span-7 bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
+        <div class="flex items-center justify-between gap-2">
+          <div class="text-[11px] font-bold text-blue-800 uppercase tracking-wide">1. Makara Hesabı & Seçimi</div>
+          <span id="mkCalcBadge" class="text-[10px] font-bold px-2 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600">Elle seçim</span>
+        </div>
+        <div id="mkTabs" class="grid grid-cols-4 gap-1.5"></div>
+        <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
+          <div class="flex gap-1.5">
+            <button type="button" id="mkCableRound" onclick="mkSetCableType('yuvarlak')" class="flex-1 px-2 py-2 text-xs font-bold rounded-xl border">Yuvarlak Kablo</button>
+            <button type="button" id="mkCableFlat" onclick="mkSetCableType('yassi')" class="flex-1 px-2 py-2 text-xs font-bold rounded-xl border">Yassı Kablo</button>
+          </div>
+          <div id="mkRoundFields" class="grid grid-cols-3 gap-2">
+            <div><label class="block text-[11px] font-bold text-slate-700 mb-1">Dış Çap (mm)</label><input id="mkCalcCap" type="text" inputmode="decimal" value="8,7" oninput="mkAutoCalc()" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-semibold"></div>
+            <div><label class="block text-[11px] font-bold text-slate-700 mb-1">Uzunluk (m)</label><input id="mkCalcLen" type="text" inputmode="decimal" value="100" oninput="mkAutoCalc()" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-semibold"></div>
+            <div><label class="block text-[11px] font-bold text-slate-700 mb-1">Net kg (ops.)</label><input id="mkCalcKg" type="text" inputmode="decimal" oninput="mkAutoCalc()" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-semibold"></div>
+          </div>
+          <div id="mkFlatFields" class="hidden grid grid-cols-3 gap-2">
+            <div><label class="block text-[11px] font-bold text-slate-700 mb-1">En (mm)</label><input id="mkCalcW" type="text" inputmode="decimal" oninput="mkAutoCalc()" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-semibold"></div>
+            <div><label class="block text-[11px] font-bold text-slate-700 mb-1">Boy (mm)</label><input id="mkCalcH" type="text" inputmode="decimal" oninput="mkAutoCalc()" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-semibold"></div>
+            <div><label class="block text-[11px] font-bold text-slate-700 mb-1">Uzunluk (m)</label><input id="mkCalcLenFlat" type="text" inputmode="decimal" value="100" oninput="mkAutoCalc()" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-semibold"></div>
+          </div>
+          <div id="mkCalcResult" class="rounded-xl bg-blue-50 border border-blue-200 p-3 text-xs"></div>
+        </div>
+        <select id="mkSelRow" onchange="mkSelect(this.value)" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-semibold"></select>
+        <details class="rounded-xl border border-slate-200 bg-slate-50 p-2.5"><summary class="cursor-pointer text-xs font-bold text-slate-700">ℹ️ Makara bilgileri (dokun)</summary><div id="mkSelectedInfo" class="grid grid-cols-3 gap-1.5 text-center mt-2"></div></details>
+        <div class="flex gap-2">
+          <button type="button" onclick="mkOpenForm(true)" class="flex-1 px-3 py-2 text-xs font-bold rounded-xl bg-slate-700 text-white cursor-pointer">✎ Seçiliyi Düzenle</button>
+          <button type="button" onclick="mkOpenForm(false)" class="flex-1 px-3 py-2 text-xs font-bold rounded-xl bg-blue-900 text-white cursor-pointer">+ Yeni Makara</button>
+        </div>
+      </section>
+
+      <!-- 2. PALET -->
+      <section class="lg:col-span-7 bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
+        <div class="text-[11px] font-bold text-blue-800 uppercase tracking-wide">2. Palet</div>
+        <div class="flex gap-2">
+          <select id="mkSelPal" onchange="mkSelPal(this.value)" class="flex-1 min-w-0 px-3 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-semibold"></select>
+          <button type="button" onclick="mkOpenPal(true)" class="px-3 py-2 text-xs font-bold rounded-xl bg-slate-700 text-white cursor-pointer">✎</button>
+          <button type="button" onclick="mkOpenPal(false)" class="px-3 py-2 text-xs font-bold rounded-xl bg-blue-900 text-white cursor-pointer">+ Palet</button>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="block text-[11px] font-bold text-slate-700 mb-1">Maks. Yükseklik (cm)</label><input id="mkMaxH" type="text" inputmode="decimal" value="110" oninput="mkRender()" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-semibold"></div>
+          <div class="flex items-end"><label class="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 cursor-pointer pb-2.5"><input type="checkbox" id="mkMax" checked onchange="mkRender()"> Paleti tam doldur</label></div>
+        </div>
+      </section>
+
+      </div>
+<div class="lg:col-span-5 space-y-4">
+<!-- SONUÇ ŞERİDİ -->
+      <section class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div class="bg-white rounded-2xl p-3 border border-slate-200"><div class="text-[10px] font-bold uppercase text-slate-500">Taban</div><div id="mkStBase" class="text-2xl font-extrabold text-blue-900">0</div></div>
+        <div class="bg-white rounded-2xl p-3 border border-slate-200"><div class="text-[10px] font-bold uppercase text-slate-500">Kat</div><div id="mkStKat" class="text-2xl font-extrabold text-blue-900">0</div></div>
+        <div class="bg-white rounded-2xl p-3 border-2 border-emerald-500/50"><div class="text-[10px] font-bold uppercase text-emerald-700">Palet Toplamı</div><div id="mkStTot" class="text-2xl font-extrabold text-emerald-700">0</div><div id="mkKpiM" class="text-[10px] font-semibold text-slate-600"></div></div>
+        <div class="bg-white rounded-2xl p-3 border border-slate-200"><div class="text-[10px] font-bold uppercase text-slate-500">Yükseklik</div><div id="mkStH" class="text-2xl font-extrabold text-slate-900">0</div></div>
+      </section>
+      <div id="mkMsgs" class="lg:col-span-12 space-y-1.5 text-xs font-semibold empty:hidden"></div>
+
+      <!-- 3. GÖRSEL (dikey, ekrana tam sığar) -->
+      <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+        <div class="text-[11px] font-bold text-blue-800 uppercase tracking-wide mb-2">3. Palet Görünümü</div>
+        <div id="mkChipLay" class="text-[11px] font-bold text-slate-600 mb-2"></div>
+        <div class="flex gap-3 items-start">
+          <div id="mkCanvasBox" class="flex-1 min-w-0 flex flex-col items-center">
+            <div id="mkDimTop" class="text-[11px] font-bold text-slate-500 mb-1"></div>
+            <canvas id="mkCanvas" class="rounded-md border-2 border-amber-900/80"></canvas>
+            <div id="mkDimBot" class="text-[11px] font-bold text-slate-500 mt-1"></div>
+          </div>
+          <div class="flex flex-col items-center shrink-0 w-16">
+            <div class="text-[10px] font-bold text-slate-500 mb-1">Yan Kesit</div>
+            <div id="mkSide" class="relative flex flex-col-reverse w-14 h-56 bg-slate-100 border border-slate-300 rounded-lg overflow-hidden"></div>
+            <div id="mkSideLbl" class="text-[10px] font-bold text-slate-600 mt-1 text-center"></div>
+          </div>
+        </div>
+      </section>
+
+      </div>
+<!-- 4. LİSTE -->
+      <section class="lg:col-span-12 bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+        <h2 id="mkListTitle" class="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2"></h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left border-collapse">
+            <thead><tr class="bg-slate-100 text-slate-700"><th class="p-2">Makara adı</th><th class="p-2">Hacim cm³</th><th class="p-2">Taşıma kg</th><th class="p-2">Dara kg</th><th class="p-2"></th></tr></thead>
+            <tbody id="mkTable"></tbody>
+          </table>
+        </div>
+        <details class="mt-3 text-xs text-slate-600">
+          <summary class="cursor-pointer font-bold text-slate-700">Excel'den liste yapıştır / sıfırla</summary>
+          <div class="mt-2 space-y-2">
+            <p>Sütunlar: <b>Makara adı</b> (ölçüler adın içinde: 333x200x150) • <b>Hacim</b> (23.562 yazımı olduğu gibi) • <b>Taşıma kg</b> • (ops.) Dara. Tip addan anlaşılır; aynı ad varsa güncellenir.</p>
+            <textarea id="mkPaste" rows="4" class="w-full px-2 py-2 rounded-lg border border-slate-300 font-mono"></textarea>
+            <div class="flex gap-2"><button type="button" onclick="mkImport()" class="px-3 py-2 rounded-lg bg-emerald-600 text-white font-bold cursor-pointer">Listeye Ekle</button><button type="button" onclick="mkReset()" class="px-3 py-2 rounded-lg bg-slate-600 text-white font-bold cursor-pointer">Varsayılana Dön</button></div>
+          </div>
+        </details>
+      </section>
+    </main>
+  <footer class="text-center text-[11px] text-slate-400 py-3 tracking-widest">ACAMAY</footer>
+
+    <!-- Makara formu -->
+    <div id="mkFormModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-4 space-y-2 max-h-[90vh] overflow-y-auto">
+        <h3 id="mkFTitle" class="font-bold text-slate-900"></h3>
+        <input id="mkFName" type="text" placeholder="Makara adı (boşsa otomatik)" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm">
+        <select id="mkFType" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm font-semibold"><option value="mdf">MDF</option><option value="karton">Karton</option><option value="plastik">Plastik</option></select>
+        <div class="grid grid-cols-3 gap-2">
+          <div><label class="text-[10px] font-bold text-slate-600">Flanş Ø (mm)</label><input id="mkFA" type="text" inputmode="decimal" class="w-full px-2 py-2 rounded-lg border border-slate-300 text-sm"></div>
+          <div><label class="text-[10px] font-bold text-slate-600">Yükseklik (mm)</label><input id="mkFC" type="text" inputmode="decimal" class="w-full px-2 py-2 rounded-lg border border-slate-300 text-sm"></div>
+          <div><label class="text-[10px] font-bold text-slate-600">Göbek Ø (mm)</label><input id="mkFD" type="text" inputmode="decimal" class="w-full px-2 py-2 rounded-lg border border-slate-300 text-sm"></div>
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <div><label class="text-[10px] font-bold text-slate-600">Hacim (cm³)</label><input id="mkFHacim" type="text" inputmode="decimal" placeholder="boş = hesapla" class="w-full px-2 py-2 rounded-lg border border-slate-300 text-sm"></div>
+          <div><label class="text-[10px] font-bold text-slate-600">Taşıma (kg)</label><input id="mkFKg" type="text" inputmode="decimal" class="w-full px-2 py-2 rounded-lg border border-slate-300 text-sm"></div>
+          <div><label class="text-[10px] font-bold text-slate-600">Dara (kg)</label><input id="mkFDara" type="text" inputmode="decimal" class="w-full px-2 py-2 rounded-lg border border-slate-300 text-sm"></div>
+        </div>
+        <p class="text-[10px] text-slate-500">Virgül ya da nokta kullanabilirsiniz. Hacim: 23.562 = 23562 cm³. Boş bırakılırsa ((Ø−40)²−göbek²)·0,7854·yükseklik formülüyle hesaplanır.</p>
+        <div class="flex gap-2 pt-1">
+          <button type="button" onclick="mkSaveForm()" class="flex-1 px-3 py-2 rounded-lg bg-emerald-600 text-white font-bold text-sm cursor-pointer">Kaydet</button>
+          <button type="button" id="mkFDel" onclick="mkDelRow()" class="px-3 py-2 rounded-lg bg-red-600 text-white font-bold text-sm cursor-pointer">Sil</button>
+          <button type="button" onclick="mkCloseModals()" class="px-3 py-2 rounded-lg bg-slate-200 text-slate-800 font-bold text-sm cursor-pointer">İptal</button>
+        </div>
+      </div>
+    </div>
+    <!-- Palet formu -->
+    <div id="mkPalModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-4 space-y-2">
+        <h3 id="mkPTitle" class="font-bold text-slate-900"></h3>
+        <input id="mkPN" type="text" placeholder="Palet adı" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm">
+        <div class="grid grid-cols-3 gap-2">
+          <div><label class="text-[10px] font-bold text-slate-600">Boy (cm)</label><input id="mkPL" type="text" inputmode="decimal" class="w-full px-2 py-2 rounded-lg border border-slate-300 text-sm"></div>
+          <div><label class="text-[10px] font-bold text-slate-600">En (cm)</label><input id="mkPW" type="text" inputmode="decimal" class="w-full px-2 py-2 rounded-lg border border-slate-300 text-sm"></div>
+          <div><label class="text-[10px] font-bold text-slate-600">Yükseklik (cm)</label><input id="mkPH" type="text" inputmode="decimal" class="w-full px-2 py-2 rounded-lg border border-slate-300 text-sm"></div>
+        </div>
+        <select id="mkPS" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm"><option>Baskılı Shrink</option><option>Şeffaf Shrink</option></select>
+        <div class="flex gap-2 pt-1">
+          <button type="button" onclick="mkSavePal()" class="flex-1 px-3 py-2 rounded-lg bg-emerald-600 text-white font-bold text-sm cursor-pointer">Kaydet</button>
+          <button type="button" id="mkPDel" onclick="mkDelPal()" class="px-3 py-2 rounded-lg bg-red-600 text-white font-bold text-sm cursor-pointer">Sil</button>
+          <button type="button" onclick="mkCloseModals()" class="px-3 py-2 rounded-lg bg-slate-200 text-slate-800 font-bold text-sm cursor-pointer">İptal</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- /viewMakara -->
+
+  <script>
+    // PL-F-010 Standart Arama Tablosu (80x120 cm Palet)
+    let PL_F_010_TABLE = [
+      { minW: 18, maxW: 18, label: "18 cm", base: 24 },
+      { minW: 19, maxW: 19, label: "19 cm", base: 22 },
+      { minW: 20, maxW: 20, label: "20 cm", base: 20 },
+      { minW: 21, maxW: 21, label: "21 cm", base: 18 },
+      { minW: 22, maxW: 22, label: "22 cm", base: 17 },
+      { minW: 23, maxW: 23, label: "23 cm", base: 15 },
+      { minW: 24, maxW: 24, label: "24 cm", base: 14 },
+      { minW: 25, maxW: 25, label: "25 cm", base: 13 },
+      { minW: 26, maxW: 26, label: "26 cm", base: 12 },
+      { minW: 27, maxW: 27, label: "27 cm", base: 11 },
+      { minW: 28, maxW: 28, label: "28 cm", base: 10 },
+      { minW: 29, maxW: 29, label: "29 cm", base: 9 },
+      { minW: 30, maxW: 31, label: "30 – 31 cm", base: 8 },
+      { minW: 32, maxW: 34, label: "32 – 34 cm", base: 7 },
+      { minW: 35, maxW: 37, label: "35 – 37 cm", base: 6 },
+      { minW: 38, maxW: 40, label: "38 – 40 cm", base: 5 },
+      { minW: 41, maxW: 43, label: "41 – 43 cm", base: 4 },
+      { minW: 44, maxW: 46, label: "44 – 46 cm", base: 3 },
+      { minW: 47, maxW: 60, label: "47 – 60 cm", base: 2 },
+      { minW: 61, maxW: 75, label: "61 – 75 cm", base: 1 }
+    ];
+    // ---- Referans tablosu: kalıcı + düzenle/sil ----
+    const PL_DEFAULT = JSON.parse(JSON.stringify(PL_F_010_TABLE));
+    try { const sv = JSON.parse(localStorage.getItem('plf010V1')); if (Array.isArray(sv) && sv.length) PL_F_010_TABLE = sv; } catch (e) {}
+    function saveRef() { try { localStorage.setItem('plf010V1', JSON.stringify(PL_F_010_TABLE)); } catch (e) {} }
+    function refreshRef() { saveRef(); initRefTable(); initRefStrip(); calculate(); }
+    let refEdit = -1;
+    function openRefForm(i) {
+      refEdit = i; const r = i >= 0 ? PL_F_010_TABLE[i] : { minW: '', maxW: '', base: '' };
+      document.getElementById('refMin').value = r.minW; document.getElementById('refMax').value = r.maxW; document.getElementById('refBase').value = r.base;
+      document.getElementById('refForm').classList.remove('hidden');
+    }
+    function editRefRow(i) { openRefForm(i); }
+    function saveRefRow() {
+      const a = pf(document.getElementById('refMin').value), b = pf(document.getElementById('refMax').value) || a, n = Math.round(pf(document.getElementById('refBase').value));
+      if (!(a >= 1 && b >= a && n >= 1)) { alert('En az, en çok (cm) ve taban adedini doğru girin.'); return; }
+      const row = { minW: a, maxW: b, base: n, label: a === b ? `${a} cm` : `${a} – ${b} cm` };
+      if (refEdit >= 0) PL_F_010_TABLE[refEdit] = row; else PL_F_010_TABLE.push(row);
+      PL_F_010_TABLE.sort((x, y) => x.minW - y.minW);
+      document.getElementById('refForm').classList.add('hidden'); refreshRef();
+    }
+    function delRefRow(i) {
+      if (PL_F_010_TABLE.length <= 1) { alert('En az bir satır kalmalı.'); return; }
+      if (!confirm(`${PL_F_010_TABLE[i].label} satırı silinsin mi?`)) return;
+      PL_F_010_TABLE.splice(i, 1); refreshRef();
+    }
+    function resetRef() { if (confirm('Referans tablosu varsayılana dönsün mü?')) { PL_F_010_TABLE = JSON.parse(JSON.stringify(PL_DEFAULT)); refreshRef(); } }
+
+    // ---- Hızlı kablo seçimi (Excel listesi: 100 m paket, göbek 15/30, yükseklik 12) ----
+    // i = Excel'deki kangal göbeği, w = Excel'in hesapladığı dış genişlik. Çap, Excel formülünün tersinden bulunur.
+    const CABLE_XL = [
+      ['H01N2-D', [['1x10', 15, 28], ['1x16', 15, 32], ['1x25', 15, 36], ['1x35', 15, 38], ['1x50', 30, 51], ['1x70', 30, 55]]],
+      ['H05RR-F', [['2x0,75', 15, 23], ['2x1', 15, 25], ['2x1,5', 15, 28], ['2x2,5', 15, 32], ['3G1,5', 15, 29], ['3G2,5', 15, 33], ['4x1', 15, 27], ['4x2,5', 15, 36], ['5G1,5', 15, 34], ['5G2,5', 30, 52]]],
+      ['H05VV-F', [['3G1,5', 15, 28]]],
+      ['H07RN-F', [['2x1', 15, 29], ['2x1,5', 15, 31], ['2x2,5', 15, 34], ['3G1', 15, 30], ['3G1,5', 15, 32], ['3G2,5', 15, 37], ['3G4', 30, 49], ['4G4', 30, 53], ['4x1,5', 15, 35], ['5G2,5', 30, 48], ['5G4', 30, 57]]]
+    ];
+    const PRESET_LIST = [
+      { g: 'Genel (yaklaşık)', n: '3×1.5 mm²', d: 8.2 }, { g: 'Genel (yaklaşık)', n: '3×2.5 mm²', d: 9.6 }, { g: 'Genel (yaklaşık)', n: '4×4 mm²', d: 12.5 },
+      { g: 'Genel (yaklaşık)', n: '1×35 mm²', d: 12.0 }, { g: 'Genel (yaklaşık)', n: '1×70 mm²', d: 16.0 }
+    ];
+    CABLE_XL.forEach(([g, rows]) => rows.forEach(([n, i, w]) => PRESET_LIST.push({ g, n: n + ' (Siyah)', i, w, d: Math.round(Math.sqrt((w * w - i * i) * 12 / 105) * 10) / 10 })));
+    function initPresetSelect() {
+      const groups = []; PRESET_LIST.forEach((p, k) => { let G = groups.find(x => x.g === p.g); if (!G) groups.push(G = { g: p.g, o: [] }); G.o.push(`<option value="${k}">${p.g === 'Genel (yaklaşık)' ? '' : p.g + ' '}${p.n} • Ø${String(p.d).replace('.', ',')} mm${p.w ? ' • ' + p.w + ' cm' : ''}</option>`); });
+      document.getElementById('selectPreset').innerHTML = '<option value="">— Kablo seçin —</option>' + groups.map(G => `<optgroup label="${G.g}">${G.o.join('')}</optgroup>`).join('');
+    }
+    function applyCablePreset(v) {
+      if (v === '') return; const p = PRESET_LIST[+v]; setMode('cable');
+      document.getElementById('inputDiameter').value = String(p.d).replace('.', ','); document.getElementById('inputLength').value = 100;
+      const ap = p.i ? APARATS.find(a => !a.custom && a.inner === p.i && a.height === 12) : null;
+      document.getElementById('selectAparat').value = ap ? ap.id : 'auto';
+      document.getElementById('presetNote').innerText = p.w ? `Excel: 100 m • göbek Ø${p.i} cm • hesaplanan genişlik ${p.w} cm. Aparat Excel'e göre seçildi; otomatik için "Otomatik"i seçin.` : 'Yaklaşık çap; aparat otomatik seçilir.';
+      calculate();
+    }
+
+
+    let currentMode = 'cable'; // 'cable' veya 'direct'
+
+    // Aparat listesi (standart 3 adet + kullanıcı eklediği özel aparatlar)
+    const APARATS = [
+      { id: 'yeni', name: "YENİ APARAT", code: "40×15×12", inner: 15, height: 12, maxW: 40, custom: false },
+      { id: 'orta', name: "ORTA APARAT", code: "50×25×11", inner: 25, height: 11, maxW: 50, custom: false },
+      { id: 'buyuk', name: "BÜYÜK APARAT", code: "60×30×12", inner: 30, height: 12, maxW: 60, custom: false }
+    ];
+
+    // PL-F-010 kuralı: dış genişliğe göre aparat
+    function getAparatInfo(outerCm) {
+      return outerCm <= 40 ? APARATS[0] : (outerCm <= 50 ? APARATS[1] : APARATS[2]);
+    }
+
+    function refreshAparatSelect(selectedId) {
+      const sel = document.getElementById('selectAparat');
+      sel.innerHTML = '<option value="auto">Otomatik (PL-F-010 kuralı)</option>' +
+        APARATS.map(a => `<option value="${a.id}">${a.custom ? '★ ' : ''}${a.name} (${a.code})</option>`).join('');
+      sel.value = selectedId || 'auto';
+    }
+
+    function addAparat() {
+      const inner = pf(document.getElementById('newApInner').value);
+      const h = pf(document.getElementById('newApH').value);
+      if (!(inner >= 5 && inner <= 60 && h >= 5 && h <= 30)) { alert('Göbek çapı 5–60 cm, yükseklik 5–30 cm olmalı.'); return; }
+      const name = (document.getElementById('newApName').value || '').trim().toUpperCase() || 'ÖZEL APARAT';
+      const id = 'c' + Date.now();
+      APARATS.push({ id, name, code: `Ø${inner}×${h}`, inner, height: h, maxW: 75, custom: true });
+      ['newApName', 'newApInner', 'newApH'].forEach(i => document.getElementById(i).value = '');
+      document.getElementById('aparatForm').classList.add('hidden');
+      refreshAparatSelect(id);
+      calculate();
+    }
+
+    function removeAparat() {
+      const id = document.getElementById('selectAparat').value;
+      const i = APARATS.findIndex(a => a.id === id && a.custom);
+      if (i < 0) return;
+      APARATS.splice(i, 1);
+      refreshAparatSelect('auto');
+      calculate();
+    }
+
+    // Tablodan taban adedini bul
+    function lookupBaseCount(outerCm) {
+      const clamped = Math.max(18, Math.min(75, Math.round(outerCm)));
+      const row = PL_F_010_TABLE.find(r => clamped >= r.minW && clamped <= r.maxW);
+      return row ? row.base : 1;
+    }
+
+    // Hesaplama modunu değiştir
+    function setMode(mode) {
+      currentMode = mode;
+      const btnCable = document.getElementById('btnModeCable');
+      const btnDirect = document.getElementById('btnModeDirect');
+      const panelCable = document.getElementById('panelCable');
+      const panelDirect = document.getElementById('panelDirect');
+
+      if (mode === 'cable') {
+        btnCable.className = "px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-900 text-white shadow-sm transition cursor-pointer";
+        btnDirect.className = "px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition cursor-pointer";
+        panelCable.classList.remove('hidden');
+        panelDirect.classList.add('hidden');
+      } else {
+        btnDirect.className = "px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-900 text-white shadow-sm transition cursor-pointer";
+        btnCable.className = "px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition cursor-pointer";
+        panelDirect.classList.remove('hidden');
+        panelCable.classList.add('hidden');
+      }
+      calculate();
+    }
+
+    // Hızlı kablo kesiti ön ayarı uygula
+    function applyPreset(diameterMm, btnEl) {
+      document.getElementById('inputDiameter').value = String(diameterMm).replace('.', ',');
+      document.querySelectorAll('.preset-btn').forEach(b => {
+        b.className = "preset-btn px-2.5 py-1.5 text-xs font-medium rounded-lg border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition cursor-pointer";
+      });
+      if (btnEl) {
+        btnEl.className = "preset-btn px-2.5 py-1.5 text-xs font-medium rounded-lg border border-blue-300 bg-blue-100 text-blue-950 font-semibold transition cursor-pointer";
+      }
+      calculate();
+    }
+
+    function syncOuterFromSlider() {
+      const val = document.getElementById('inputOuterSlider').value;
+      document.getElementById('inputOuterNumber').value = val;
+      calculate();
+    }
+
+    function syncOuterFromNumber() {
+      let val = parseInt(document.getElementById('inputOuterNumber').value || 25, 10);
+      val = Math.max(18, Math.min(75, val));
+      document.getElementById('inputOuterSlider').value = val;
+      calculate();
+    }
+
+    // Ana Hesaplama Fonksiyonu
+    function calculate() {
+      let layers = parseInt(document.getElementById('selectLayers').value, 10);
+      const coilKg = pf(document.getElementById('inputCoilKg').value), heavy = coilKg > 50;
+      if (heavy && layers > 5) layers = 5;
+      const layoutType = document.getElementById('selectLayout').value;
+      const palletBaseH = 15; // Sabit palet yüksekliği (cm); kalan yükseklik kat × aparat yüksekliği
+      const selVal = document.getElementById('selectAparat').value;
+      const manual = selVal === 'auto' ? null : (APARATS.find(a => a.id === selVal) || null);
+      document.getElementById('btnRemoveAparat').classList.toggle('hidden', !(manual && manual.custom));
+
+      let outerCm = 25; let autoAp = null;
+      let theoreticalOuter = 25;
+      let lengthMeters = (pf(document.getElementById('inputLength').value) || 100);
+
+      if (currentMode === 'cable') {
+        const dMm = (pf(document.getElementById('inputDiameter').value) || 8.2);
+        const dCm = dMm / 10;
+        const lCm = lengthMeters * 100;
+        const fillFactor = 0.785; // Silindirik kablo sarım doluluk katsayısı (~pi/4)
+
+        // Excel formülü: KAREKÖK((L·d²·1,05 + H·göbek²) / H)  (L m, d mm, H ve göbek cm)
+        const wFor = a => Math.sqrt((lengthMeters * dMm * dMm * 1.05) / a.height + a.inner * a.inner);
+        let calcW;
+        if (manual) calcW = wFor(manual);
+        else {
+          // Genişlik sınırına göre ilk uygun standart aparat (Yeni ≤40, Orta ≤50, Büyük ≤60 cm)
+          const std = APARATS.filter(a => !a.custom);
+          autoAp = std.find(a => Math.round(wFor(a)) <= a.maxW) || std[std.length - 1];
+          calcW = wFor(autoAp);
+        }
+        theoreticalOuter = calcW;
+        outerCm = Math.max(18, Math.min(75, Math.round(calcW)));
+      } else {
+        outerCm = Math.max(18, Math.min(75, parseInt(document.getElementById('inputOuterNumber').value || 25, 10)));
+        theoreticalOuter = outerCm;
+      }
+
+      const ruleAparat = getAparatInfo(outerCm);
+      const aparat = manual || autoAp || ruleAparat;
+      const tableBaseCount = lookupBaseCount(outerCm);
+
+      // Fiziksel olarak 80x120 cm palete çakışmadan ve taşmadan sığan gerçek dizilimi hesapla
+      const packingResult = computeCollisionFreePacking(80, 120, outerCm, 999, layoutType);
+      const physicalBaseCount = packingResult.positions.length;
+
+      const totalCoils = physicalBaseCount * layers;
+      const totalHeight = Math.round(layers * aparat.height + palletBaseH);
+
+      // Arayüz Kartlarını Güncelle
+      
+      document.getElementById('resOuterW').innerText = outerCm;
+      document.getElementById('resOuterSub').innerText =
+        currentMode === 'cable' ? `Hesaplanan: ${theoreticalOuter.toFixed(1)} cm` : `Doğrudan Ölçüm`;
+
+      document.getElementById('resTotalCoils').innerText = totalCoils;
+      document.getElementById('resTotalMeters').innerText =
+        currentMode === 'cable' ? `Toplam: ${(totalCoils * lengthMeters).toLocaleString('tr-TR')} m` : `Taban × ${layers} Kat`;
+
+      document.getElementById('resBaseCount').innerText = `${physicalBaseCount} Adet`;
+      document.getElementById('resTableRefSub').innerText = `PL-F-010 Tablo: ${tableBaseCount} Adet`;
+      document.getElementById('resLayerCount').innerText = `${layers} Kat`;
+
+      const heightEl = document.getElementById('resStackHeight');
+      heightEl.innerText = `${totalHeight} cm`;
+      heightEl.className = totalHeight > 110
+        ? "text-3xl font-extrabold text-red-600 mt-1"
+        : "text-3xl font-extrabold text-emerald-700 mt-1";
+
+      document.getElementById('badgeLayoutType').innerText = packingResult.label;
+      const fillPct = (physicalBaseCount * Math.PI * Math.pow(outerCm / 2, 2) / (80 * 120) * 100).toFixed(0);
+      const isExport = document.getElementById('selectSales').value === 'export';
+      const palletName = isExport ? 'EPAL Palet' : 'Euro Palet';
+      const shrinkName = isExport ? 'Şeffaf Shrink' : 'Baskılı Shrink';
+      document.getElementById('resFill').innerText = `Palet Doluluğu %${fillPct} • 0 Çakışma • 0 Taşma`;
+
+      // Shrink sarım & denge rozetini güncelle
+      const stretchBadge = document.getElementById('badgeStretchStatus');
+      if (totalHeight <= 110) {
+        stretchBadge.innerText = "✓ Shrink Sarıma & Yüklemeye Uygun";
+        stretchBadge.className = "text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300";
+      } else {
+        stretchBadge.innerText = "⚠️ Yükseklik Sınırı Aşıldı";
+        stretchBadge.className = "text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-red-100 text-red-900 border border-red-300";
+      }
+
+      // Akıllı Operasyon Uyarılarını Oluştur
+      const extra = [];
+      const dMmNow = currentMode === 'cable' ? (pf(document.getElementById('inputDiameter').value) || 8.2) : null;
+      if (dMmNow !== null) {
+        if (dMmNow >= 12 && layers > 6) extra.push({ type: 'danger', text: `🔌 Kalın kesit / kaynak kablosu (${dMmNow} mm) ağır olduğu için en fazla 5–6 sıra yapılmalı (50 kg üzeri kangallar 5 sıra paletlenir). Mevcut: ${layers} kat.` });
+      } else if (layers >= 7) {
+        extra.push({ type: 'info', text: `🔌 Kalın kesitli veya kaynak kabloları ağır olduğu için en fazla 5–6 sıra yapılmalıdır. 50 kg üzeri kangallar 5 sıra olacak şekilde paletlenecektir.` });
+      }
+      if (manual && !manual.custom && manual.id !== ruleAparat.id) {
+        extra.push({ type: 'warning', text: `🧰 Seçili aparat (${manual.code}) ${outerCm} cm için kural dışı. PL-F-010: ${ruleAparat.name} (${ruleAparat.code}) kullanılmalı.` });
+      } else if (manual && manual.custom) {
+        extra.push({ type: 'info', text: `🧰 Özel aparat kullanılıyor (${manual.name} ${manual.code}). Kat yüksekliği ${manual.height} cm olarak hesaplandı.` });
+      }
+      extra.push(heavy ? { type: 'warning', text: `⚖️ Kangal ${coilKg} kg (50 kg üzeri): 5 sıra olacak şekilde paletlenecektir. Kat sayısı 5'e sabitlendi.` } : { type: 'info', text: '⚖️ 50 kg üzeri kangallar 5 sıra olacak şekilde paletlenecektir.' });
+      if (aparat.maxW && Math.round(theoreticalOuter) > aparat.maxW) extra.push({ type: 'danger', text: `📏 Hesaplanan dış genişlik (${theoreticalOuter.toFixed(1)} cm), ${aparat.name} sınırını (${aparat.maxW} cm) aşıyor; daha büyük aparat veya daha kısa metraj seçin.` });
+      extra.push({ type: 'info', text: `🪵 ${palletName} (80×120 cm, 15 cm) • ${shrinkName} ile sarılacak.` });
+      if (outerCm < aparat.inner + 2) extra.push({ type: 'danger', text: `🧰 Kangal dış çapı (${outerCm} cm) aparat göbeğine (${aparat.inner} cm) çok yakın; metraj/aparat seçimini kontrol edin.` });
+      if (physicalBaseCount > tableBaseCount) extra.push({ type: 'warning', text: `📈 Maksimum verim modu: ${physicalBaseCount} adet yerleşiyor (PL-F-010 standardı ${tableBaseCount}). Shrink ve denge için sahada doğrulayın.` });
+      // Fikir: 1-2 cm daha küçük sararak tabanda daha fazla kangal
+      for (let w = outerCm - 1; w >= 18; w--) {
+        const nb = lookupBaseCount(w);
+        if (nb > tableBaseCount) {
+          if (currentMode === 'cable') {
+            const dCm = dMmNow / 10;
+            const Lw = (w * w - aparat.inner * aparat.inner) * aparat.height / (1.05 * dMmNow * dMmNow);
+            const oldTot = physicalBaseCount * layers * lengthMeters, newTot = nb * layers * Lw;
+            if (Lw >= 10 && newTot > oldTot) extra.push({ type: 'info', text: `💡 Fikir: Kangalı ${w} cm'e (≈${Math.floor(Lw / 5) * 5} m) sararsanız taban ${physicalBaseCount}→${nb} adet olur; palet toplamı ${Math.round(oldTot).toLocaleString('tr-TR')} → ${Math.round(newTot).toLocaleString('tr-TR')} m (+${Math.round(newTot - oldTot).toLocaleString('tr-TR')} m).` });
+          } else {
+            extra.push({ type: 'info', text: `💡 Fikir: Dış genişliği ${w} cm'e düşürürseniz taban ${tableBaseCount}→${nb} adet olur (+${(nb - tableBaseCount) * layers} kangal/palet).` });
+          }
+          break;
+        }
+      }
+      highlightRefStrip(outerCm);
+      renderAparatIcon(aparat);
+      document.getElementById('noteAparat').innerHTML = `📝 <b>Not:</b> Bu kangal <b>${aparat.name} (${aparat.code})</b> ile sarılacaktır • Göbek Ø${aparat.inner} cm • kangal yüksekliği ${aparat.height} cm • dış genişlik <b>${outerCm} cm</b>${aparat.maxW ? ' (aparat sınırı ' + aparat.maxW + ' cm)' : ''}.${heavy ? ' <b>50 kg üzeri: 5 sıra paletlenecek.</b>' : ''}`;
+      renderWarnings(outerCm, layers, totalHeight, theoreticalOuter, tableBaseCount, physicalBaseCount, extra);
+
+      // Yan Kesit Yükseklik Göstergesini Güncelle
+      renderSideHeightBar(layers, aparat.height, palletBaseH, totalHeight);
+
+      // 2D Kuşbakışı Palet Görselini Çiz (Çakışmasız koordinatlarla)
+      drawPalletCanvas(outerCm, aparat.inner, packingResult.positions);
+    }
+
+    // Seçilen aparatın yanındaki küçük ikon (üstten + yandan, orantılı)
+    function renderAparatIcon(ap) {
+      const rIn = Math.max(3, Math.min(13, ap.inner / 60 * 14));
+      const coreW = Math.max(6, Math.min(24, ap.inner / 60 * 26));
+      const hh = Math.max(10, Math.min(26, ap.height * 1.6));
+      const y0 = 18 - hh / 2, xs = 60 - coreW / 2 - 6;
+      document.getElementById('aparatIcon').innerHTML = `
+        <svg width="76" height="36" viewBox="0 0 76 36" aria-hidden="true">
+          <circle cx="17" cy="18" r="15" fill="#1e293b"/><circle cx="17" cy="18" r="${rIn}" fill="#fde68a" stroke="#b45309"/>
+          <rect x="${xs - 2}" y="${y0 - 3}" width="${coreW + 16}" height="3" fill="#b45309"/>
+          <rect x="${xs - 2}" y="${y0 + hh}" width="${coreW + 16}" height="3" fill="#b45309"/>
+          <rect x="${xs}" y="${y0}" width="6" height="${hh}" fill="#1e293b"/><rect x="${xs + 6 + coreW}" y="${y0}" width="6" height="${hh}" fill="#1e293b"/>
+          <rect x="${xs + 6}" y="${y0}" width="${coreW}" height="${hh}" fill="#fde68a"/>
+        </svg><span>Ø${ap.inner} • ${ap.height} cm</span>`;
+    }
+
+    // Operasyonel Kurallar & Uyarılar (Kangal Önemli Notlar)
+    function renderWarnings(outerCm, layers, totalHeight, theoreticalOuter, tableBaseCount, physicalBaseCount, extra) {
+      const container = document.getElementById('warningsContainer');
+      const alerts = [];
+
+      if (physicalBaseCount < tableBaseCount) {
+        alerts.push({
+          type: 'warning',
+          text: `📐 Fiziksel Sığma Kontrolü: PL-F-010 tablosunda ${outerCm} cm için teorik ${tableBaseCount} adet görünse de, 80×120 cm palet içinde kangalların birbirine binmemesi ve dışarı taşmaması için fiziksel olarak maksimum ${physicalBaseCount} adet yerleşebilir.`
+        });
+      } else {
+        alerts.push({
+          type: 'success',
+          text: `🛡️ ${physicalBaseCount} adet kangal (${outerCm} cm) birbirine yapışık, palet sınırları içinde, sıfır taşmayla dizilir; dıştan shrink sarıma uygundur.`
+        });
+      }
+
+      if (totalHeight > 110) {
+        alerts.push({
+          type: 'danger',
+          text: `⚠️ Palet yüksekliği 110 cm sınırını aşıyor! (Mevcut: ${totalHeight} cm). Lütfen kat sayısını azaltın.`
+        });
+      } else {
+        alerts.push({
+          type: 'success',
+          text: `✅ Palet yüksekliği (${totalHeight} cm) 110 cm maksimum yükleme sınırına uygundur. Shrink öncesi 4 köşeye köşe koruyucu karton önerilir.`
+        });
+      }
+
+      if (outerCm <= 26) {
+        alerts.push({
+          type: 'info',
+          text: `📦 Küçük Boyutlu Kangal (${outerCm} cm): Sıranın düzgün durması ve devrilmemesi için 2–3 sırada bir araya karton koyun.`
+        });
+      }
+
+
+      if (currentMode === 'cable' && theoreticalOuter > 75) {
+        alerts.push({
+          type: 'danger',
+          text: `📏 Hesaplanan dış çap (${theoreticalOuter.toFixed(1)} cm) 75 cm palet genişlik sınırını aşıyor! Metrajı düşürün veya makara kullanın.`
+        });
+      }
+
+      (extra || []).forEach(e => alerts.push(e));
+      container.innerHTML = alerts.map(a => {
+        let styles = "bg-blue-50 text-blue-900 border-blue-300";
+        if (a.type === 'danger') styles = "bg-red-50 text-red-900 border-red-300 font-semibold";
+        if (a.type === 'warning') styles = "bg-amber-50 text-amber-950 border-amber-300 font-medium";
+        if (a.type === 'success') styles = "bg-emerald-50 text-emerald-900 border-emerald-300";
+        return `<div class="px-3.5 py-2.5 rounded-xl border text-xs leading-relaxed ${styles}">${a.text}</div>`;
+      }).join('');
+    }
+
+    // Yan Kesit Yükseklik Çubuğu
+    function renderSideHeightBar(layers, coilH, palletH, totalH) {
+      const maxScaleCm = 130; // Görsel çubuğun toplam yüksekliği 130 cm temsil eder
+      const palletPct = (palletH / maxScaleCm) * 100;
+      const singleLayerPct = (coilH / maxScaleCm) * 100;
+
+      const baseEl = document.getElementById('heightPalletBase');
+      baseEl.style.height = `${palletPct}%`;
+
+      const stackEl = document.getElementById('heightStackVisual');
+      let layersHtml = '';
+      for (let i = 1; i <= layers; i++) {
+        const isOver = (palletH + i * coilH) > 110;
+        const bgClass = isOver
+          ? 'bg-red-500 border-red-700 text-white'
+          : (i % 2 === 0 ? 'bg-blue-800 border-blue-950 text-blue-100' : 'bg-blue-700 border-blue-900 text-white');
+        layersHtml += `
+          <div style="height: ${singleLayerPct}%;" class="w-full border-t ${bgClass} text-[9px] font-bold flex items-center justify-center">
+            ${i}. Kat
+          </div>
+        `;
+      }
+      stackEl.innerHTML = layersHtml;
+
+      document.getElementById('heightSideLabel').innerText = `${totalH} / 110 cm`;
+      const pill = document.getElementById('heightStatusPill');
+      if (totalH > 110) {
+        pill.innerText = "Sınır Aşıldı!";
+        pill.className = "mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-800";
+      } else {
+        pill.innerText = "Sınır İçinde";
+        pill.className = "mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800";
+      }
+    }
+
+    // 2D Ölçekli Kuşbakışı Palet Çizimi (80 cm x 120 cm)
+    function drawPalletCanvas(outerCm, innerCm, positions) {
+      const canvas = document.getElementById('palletCanvas');
+      const ctx = canvas.getContext('2d');
+      const pb = document.getElementById('palBox'), availW = Math.max(160, (pb ? pb.clientWidth : 300) - 24);
+      const scale = Math.min(availW / 80, Math.max(280, window.innerHeight * 0.7) / 120, 6);
+      const W = 80 * scale, H = 120 * scale;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.style.width = W + 'px'; canvas.style.height = H + 'px'; 
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+      const mk = (seed) => () => { seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+      const isExport = document.getElementById('selectSales').value === 'export';
+
+      // Euro/EPAL palet üstü: 5 üst tahta (14.5/10/14.5/10/14.5 cm), aralarından alt takozlar görünür
+      const boards = [[0, 14.5], [18.625, 10], [32.75, 14.5], [51.375, 10], [65.5, 14.5]];
+      const bearers = [0, 52.75, 105.5];
+      const tones = ['#d9b47a', '#cfa66a', '#ddbb84', '#d2ab70', '#d7b277'];
+      function drawPallet() {
+        const rnd = mk(11);
+        ctx.fillStyle = '#2a1c11'; ctx.fillRect(0, 0, W, H);
+        bearers.forEach(y => { ctx.fillStyle = '#9a6f3f'; ctx.fillRect(0, y * scale, W, 14.5 * scale); });
+        boards.forEach(([x, w], i) => {
+          const bx = x * scale, bw = w * scale;
+          const g = ctx.createLinearGradient(bx, 0, bx + bw, 0);
+          g.addColorStop(0, '#e6c791'); g.addColorStop(0.5, tones[i]); g.addColorStop(1, '#b98f58');
+          ctx.fillStyle = g; ctx.fillRect(bx, 0, bw, H);
+          ctx.lineWidth = 0.7;
+          for (let k = 0; k < 16; k++) {
+            const gx = bx + rnd() * bw, amp = 0.6 + rnd() * 1.4, ph = rnd() * 6;
+            ctx.strokeStyle = `rgba(110,70,30,${0.12 + rnd() * 0.2})`;
+            ctx.beginPath();
+            for (let y = 0; y <= H; y += 12) { const xx = gx + Math.sin(y / 40 + ph) * amp; y === 0 ? ctx.moveTo(xx, y) : ctx.lineTo(xx, y); }
+            ctx.stroke();
+          }
+          for (let k = 0; k < 2; k++) {
+            ctx.fillStyle = 'rgba(100,60,25,0.45)';
+            ctx.beginPath(); ctx.ellipse(bx + bw * (0.3 + rnd() * 0.4), 20 + rnd() * (H - 40), 3.2, 5.5, 0, 0, Math.PI * 2); ctx.fill();
+          }
+          ctx.strokeStyle = 'rgba(50,28,10,0.7)'; ctx.lineWidth = 1; ctx.strokeRect(bx, 0, bw, H);
+          bearers.forEach(y => [0.25, 0.75].forEach(f => {
+            const nx = bx + bw * f, ny = (y + 7.25) * scale;
+            ctx.fillStyle = '#6b7280'; ctx.beginPath(); ctx.arc(nx, ny, 1.9, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.beginPath(); ctx.arc(nx - 0.5, ny - 0.5, 0.7, 0, Math.PI * 2); ctx.fill();
+          }));
+        });
+      }
+      drawPallet();
+
+      const rO = (outerCm * scale) / 2, rI = (innerCm * scale) / 2;
+      positions.forEach((pos, index) => {
+        const cx = pos.x * scale, cy = pos.y * scale;
+        const rnd = mk(100 + index * 17);
+        // Zemine düşen gölge
+        ctx.save();
+        ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 10; ctx.shadowOffsetX = 3; ctx.shadowOffsetY = 4;
+        ctx.fillStyle = '#0b0f19'; ctx.beginPath(); ctx.arc(cx, cy, rO - 0.6, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+        // Kablo gövdesi (siyah PVC kılıf)
+        const grad = ctx.createRadialGradient(cx, cy, rI, cx, cy, rO);
+        grad.addColorStop(0, '#0b0f19'); grad.addColorStop(0.5, '#1f2937'); grad.addColorStop(1, '#0f172a');
+        ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(cx, cy, rO - 0.6, 0, Math.PI * 2); ctx.fill();
+        // Sarım halkaları (kablo turları)
+        let k = 0;
+        for (let rr = rI + 1.5; rr < rO - 1; rr += 2.3, k++) {
+          ctx.strokeStyle = k % 2 ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.38)';
+          ctx.lineWidth = 1.1; ctx.beginPath(); ctx.arc(cx, cy, rr + (rnd() - 0.5) * 0.5, 0, Math.PI * 2); ctx.stroke();
+        }
+        // Kılıf parlaması (koni gradyan; desteklenmiyorsa atlanır)
+        if (ctx.createConicGradient) {
+          ctx.save();
+          ctx.beginPath(); ctx.arc(cx, cy, rO - 0.6, 0, Math.PI * 2); ctx.arc(cx, cy, rI, 0, Math.PI * 2, true); ctx.clip('evenodd');
+          const cg = ctx.createConicGradient(-Math.PI / 4, cx, cy);
+          [[0, 0.24], [0.12, 0], [0.5, 0.16], [0.62, 0], [1, 0.24]].forEach(([p, a]) => cg.addColorStop(p, `rgba(255,255,255,${a})`));
+          ctx.fillStyle = cg; ctx.fillRect(cx - rO, cy - rO, rO * 2, rO * 2);
+          ctx.restore();
+        }
+        ctx.strokeStyle = '#020617'; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.arc(cx, cy, rO - 0.6, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,255,255,0.18)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(cx, cy, rO - 2, 0, Math.PI * 2); ctx.stroke();
+        // 4 adet bağlama bandı
+        const a0 = rnd() * Math.PI;
+        for (let b = 0; b < 4; b++) {
+          ctx.save(); ctx.translate(cx, cy); ctx.rotate(a0 + b * Math.PI / 2);
+          ctx.fillStyle = '#e5e7eb'; ctx.fillRect(rI, -2.2, rO - rI, 4.4);
+          ctx.strokeStyle = 'rgba(15,23,42,0.45)'; ctx.lineWidth = 0.6; ctx.strokeRect(rI, -2.2, rO - rI, 4.4);
+          ctx.restore();
+        }
+        // Ürün etiketi
+        ctx.save(); ctx.translate(cx, cy); ctx.rotate(a0 + Math.PI / 4);
+        const lx = (rI + rO) / 2 - 6;
+        ctx.fillStyle = '#f8fafc'; ctx.fillRect(lx, -4, 12, 8);
+        ctx.strokeStyle = '#64748b'; ctx.lineWidth = 0.5; ctx.strokeRect(lx, -4, 12, 8);
+        ctx.fillStyle = '#94a3b8'; [-2, 0, 2].forEach(o => ctx.fillRect(lx + 1.5, o - 0.4, 9, 0.8));
+        ctx.restore();
+        // Göbek: aparatın içinden palet tahtası görünür
+        ctx.save();
+        ctx.beginPath(); ctx.arc(cx, cy, rI, 0, Math.PI * 2); ctx.clip();
+        drawPallet();
+        const hg = ctx.createRadialGradient(cx, cy, rI * 0.3, cx, cy, rI);
+        hg.addColorStop(0, 'rgba(0,0,0,0.05)'); hg.addColorStop(1, 'rgba(0,0,0,0.55)');
+        ctx.fillStyle = hg; ctx.fillRect(cx - rI, cy - rI, rI * 2, rI * 2);
+        ctx.restore();
+        ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(cx, cy, rI, 0, Math.PI * 2); ctx.stroke();
+      });
+
+      // Shrink film: iç piyasa = baskılı, ihracat = şeffaf
+      ctx.save();
+      const sg = ctx.createLinearGradient(0, 0, W, H);
+      [[0, 0.22], [0.3, 0.03], [0.55, 0], [0.8, 0.12], [1, 0.04]].forEach(([p, a]) => sg.addColorStop(p, `rgba(255,255,255,${a})`));
+      ctx.fillStyle = sg; ctx.fillRect(0, 0, W, H);
+      const cr = mk(5);
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 0.8;
+      for (let i = 0; i < 9; i++) {
+        const sx = cr() * W, sy = cr() < 0.5 ? 0 : H;
+        ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(sx + (cr() - 0.5) * 60, H / 2, cr() * W, H - sy); ctx.stroke();
+      }
+      if (!isExport) {
+        ctx.rotate(-Math.PI / 6);
+        ctx.fillStyle = 'rgba(30,64,175,0.16)'; ctx.font = '700 12px Inter, sans-serif';
+        for (let y = -H; y < H * 1.5; y += 34) for (let x = -W; x < W * 1.6; x += 120) ctx.fillText('BASKILI SHRINK', x + (y / 34 % 2) * 60, y);
+      }
+      ctx.restore();
+
+      // Sıra numaraları (film üstünde okunaklı)
+      positions.forEach((pos, index) => {
+        const cx = pos.x * scale, cy = pos.y * scale;
+        const br = Math.max(7, Math.min(11, rI * 0.6));
+        ctx.fillStyle = 'rgba(255,255,255,0.93)'; ctx.beginPath(); ctx.arc(cx, cy, br, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#475569'; ctx.lineWidth = 1; ctx.stroke();
+        ctx.fillStyle = '#0f172a'; ctx.font = `700 ${Math.round(br * 1.1)}px Inter, sans-serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(String(index + 1), cx, cy + 0.5);
+      });
+    }
+
+    /**
+     * GERÇEK GEOMETRİK ÇAKIŞMASIZ DAİRE YERLEŞTİRME MOTORU (Collision-Free Circle Packing)
+     * Kural 1: Hiçbir kangal palet dışına taşamaz (r <= x <= W - r ve r <= y <= H - r).
+     * Kural 2: İki kangal merkezi arasındaki Öklid mesafesi asla dış çaptan (d) küçük olamaz (dist >= d - 0.01).
+     * Kural 3: PL-F-010 Saha Tablosundaki özel yerleşim kombinasyonları (2-1-2 kilitli vb.) desteklenir.
+     */
+    function computeCollisionFreePacking(palletW, palletH, d, maxTargetCount, mode) {
+      const r = d / 2;
+      const eps = 0.01; // Kayan nokta toleransı
+
+      // Yardımcı: Nokta kümesinin tüm çakışma ve taşma kurallarına uyduğunu doğrula
+      function isValidPacking(pts) {
+        for (let i = 0; i < pts.length; i++) {
+          if (pts[i].x < r - eps || pts[i].x > palletW - r + eps ||
+              pts[i].y < r - eps || pts[i].y > palletH - r + eps) {
+            return false;
+          }
+          for (let j = i + 1; j < pts.length; j++) {
+            const dx = pts[i].x - pts[j].x;
+            const dy = pts[i].y - pts[j].y;
+            if (Math.hypot(dx, dy) < d - eps) {
+              return false;
+            }
+          }
+        }
+        return true;
+      }
+
+      // Strateji 0: PL-F-010 Standart Saha Kilitli Desenleri (Örn: 32-34 cm için 7 adet 2-1-2-2 deseni)
+      function buildFieldPreset() {
+        const pts = [];
+        // Eğer dış genişlik 32-34 cm aralığındaysa (veya tablo tabanı 7 ise), sahada kanıtlanmış 2-1-2-2 (7 adet) yerleşimi uygula
+        if (d >= 31 && d <= 36 && maxTargetCount >= 7) {
+          // 80x120 cm palet koordinatları (Palet En=80, Boy=120)
+          const yOffsets = [
+            r + 4,                    // 1. Sıra (Sol)
+            r + 4,                    // 1. Sıra (Sağ)
+            r + d * 0.85,             // 2. Sıra (Orta kilit)
+            r + d * 1.65,             // 3. Sıra (Sol)
+            r + d * 1.65,             // 3. Sıra (Sağ)
+            r + d * 2.45,             // 4. Sıra (Sol)
+            r + d * 2.45              // 4. Sıra (Sağ)
+          ];
+          
+          // Gerçek kilitli koordinatlar
+          const candidate = [
+            { x: r + 2, y: 15 + r },
+            { x: palletW - r - 2, y: 15 + r },
+            { x: palletW / 2, y: 15 + r + d * 0.82 },
+            { x: r + 2, y: 15 + r + d * 1.64 },
+            { x: palletW - r - 2, y: 15 + r + d * 1.64 },
+            { x: r + 2, y: 15 + r + d * 2.46 },
+            { x: palletW - r - 2, y: 15 + r + d * 2.46 }
+          ];
+          if (isValidPacking(candidate)) {
+            return candidate;
+          }
+        }
+        return [];
+      }
+
+      // Strateji 1: Yapışık ızgara (kangallar birbirine temas eder, blok ortalanır)
+      function buildGrid() {
+        const cols = Math.floor(palletW / d), rows = Math.floor(palletH / d);
+        if (cols < 1 || rows < 1) return [];
+        const total = Math.min(maxTargetCount, cols * rows);
+        const pts = [];
+        for (let i = 0; i < total; i++) {
+          const row = Math.floor(i / cols), col = i % cols;
+          const inRow = Math.min(cols, total - row * cols);
+          pts.push({ x: (palletW - inRow * d) / 2 + r + col * d, y: r + row * d });
+        }
+        return isValidPacking(pts) ? pts : [];
+      }
+
+      // Strateji 2: Şaşırtmalı (Hexagonal) Yerleşim
+      function buildHex() {
+        const maxCols = Math.floor(palletW / d);
+        if (maxCols < 1) return [];
+
+        const oddCols = maxCols;
+        const evenCols = Math.max(1, maxCols - 1);
+        const stepX = oddCols > 1 ? (palletW - d) / (oddCols - 1) : 0;
+        const halfShift = oddCols > 1 ? stepX / 2 : 0;
+        const minStepY = halfShift >= d ? d : Math.sqrt(Math.max(0, d * d - halfShift * halfShift));
+
+        const rawPts = [];
+        let rowIdx = 0;
+        while (rawPts.length < maxTargetCount) {
+          const cy = r + rowIdx * minStepY;
+          if (cy + r > palletH + eps) break;
+
+          const isEvenRow = rowIdx % 2 === 1;
+          const colsHere = isEvenRow ? evenCols : oddCols;
+
+          for (let c = 0; c < colsHere && rawPts.length < maxTargetCount; c++) {
+            let cx;
+            if (oddCols === 1) {
+              cx = palletW / 2;
+            } else if (!isEvenRow) {
+              cx = r + c * stepX;
+            } else {
+              cx = r + halfShift + c * stepX;
+            }
+            rawPts.push({ x: cx, y: cy });
+          }
+          rowIdx++;
+        }
+
+        if (rawPts.length > 0) {
+          const maxY = Math.max(...rawPts.map(p => p.y));
+          const usedH = (maxY + r);
+          const offsetY = (palletH - usedH) / 2;
+          const centeredPts = rawPts.map(p => ({ x: p.x, y: p.y + offsetY }));
+          if (isValidPacking(centeredPts)) return centeredPts;
+        }
+
+        return [];
+      }
+
+      // Strateji 3: Sıkı Hex (satırlar 0.866·d aralıkla, palet iki yönde de denenir)
+      function buildTight(swap) {
+        const L = swap ? palletH : palletW, M = swap ? palletW : palletH;
+        const n = Math.floor(L / d);
+        if (n < 1 || M < d) return [];
+        const step = Math.sqrt(3) / 2 * d;
+        const shifted = L >= (n + 0.5) * d;
+        const rows = Math.floor((M - d) / step) + 1;
+        const offX = (L - (shifted ? (n + 0.5) * d : n * d)) / 2;
+        const offY = (M - (d + (rows - 1) * step)) / 2;
+        const pts = [];
+        for (let i = 0; i < rows && pts.length < maxTargetCount; i++) {
+          const odd = i % 2 === 1;
+          const cnt = (odd && !shifted) ? n - 1 : n;
+          for (let c = 0; c < cnt && pts.length < maxTargetCount; c++) {
+            const px = offX + r + c * d + (odd ? d / 2 : 0);
+            const py = offY + r + i * step;
+            pts.push(swap ? { x: py, y: px } : { x: px, y: py });
+          }
+        }
+        return isValidPacking(pts) ? pts : [];
+      }
+
+      // Strateji 4: Simetrik sütun dizilimi (örn. 2-1-2-2). Her sütun kısa kenara göre
+      // kenara dayalı, ortalı ya da yapışık küme olur; sütunlar birbirine değecek şekilde sıkıştırılır.
+      function buildStaggered() {
+        let bestAll = [];
+        const orients = [
+          { L: palletH, Wd: palletW, map: (x, y) => ({ x: y, y: x }) },
+          { L: palletW, Wd: palletH, map: (x, y) => ({ x: x, y: y }) }
+        ];
+        for (const o of orients) {
+          const kmax = Math.floor(o.Wd / d + 1e-9);
+          const types = [], seen = new Set();
+          const addType = (ys) => { const key = ys.map(v => v.toFixed(2)).join(','); if (!seen.has(key)) { seen.add(key); types.push(ys); } };
+          for (let k = kmax; k >= 1; k--) {
+            if (k === 1) { addType([o.Wd / 2]); continue; }
+            const sp = (o.Wd - 2 * r) / (k - 1);
+            if (sp >= d - 1e-6) addType(Array.from({ length: k }, (_, i) => r + i * sp));
+            addType(Array.from({ length: k }, (_, i) => o.Wd / 2 + (i - (k - 1) / 2) * d));
+            const sp2 = (o.Wd - 2 * r) / k;
+            if (sp2 >= d - 1e-6) addType(Array.from({ length: k }, (_, i) => r + (i + 0.5) * sp2));
+          }
+          const cols = [];
+          let nodes = 0, bestN = 0, bestPts = [];
+          const dfs = (count) => {
+            if (++nodes > 12000 || bestN >= maxTargetCount) return;
+            if (count > bestN) { bestN = count; bestPts = cols.flatMap(c => c.pts.map(p => ({ x: p.x, y: p.y }))); }
+            for (const ys of types) {
+              if (count + ys.length > maxTargetCount) continue;
+              let x = cols.length ? cols[cols.length - 1].x + d * 0.3 : r;
+              for (const c of cols) for (const q of c.pts) for (const y of ys) {
+                const dy = Math.abs(q.y - y);
+                if (dy < d) x = Math.max(x, c.x + Math.sqrt(d * d - dy * dy));
+              }
+              if (x > o.L - r + 1e-6) continue;
+              cols.push({ x, pts: ys.map(y => ({ x, y })) });
+              dfs(count + ys.length);
+              cols.pop();
+            }
+          };
+          dfs(0);
+          if (bestPts.length > bestAll.length) {
+            // uzun eksende ortala
+            const minX = Math.min(...bestPts.map(p => p.x)) - r, maxX = Math.max(...bestPts.map(p => p.x)) + r;
+            const sh = (o.L - (maxX - minX)) / 2 - minX;
+            bestAll = bestPts.map(p => o.map(p.x + sh, p.y));
+          }
+        }
+        return isValidPacking(bestAll) ? bestAll : [];
+      }
+
+      const gridPts = buildGrid();
+      const t0 = buildTight(false), t1 = buildTight(true);
+      const pick = (list) => list.reduce((b, c) => c.pts.length > b.pts.length ? c : b);
+      const G = { pts: gridPts, label: `Yapışık Düz Blok (${gridPts.length} Adet)` };
+      const T0 = { pts: t0, label: `Yapışık Hex – Dik (${t0.length} Adet)` };
+      const T1 = { pts: t1, label: `Yapışık Hex – Yatık (${t1.length} Adet)` };
+
+      const stag = buildStaggered();
+      const S = { pts: stag, label: `Simetrik Kilitli Dizilim (${stag.length} Adet)` };
+      let best;
+      if (mode === 'grid') best = G;
+      else if (mode === 'hex') best = pick([T0, T1, S]);
+      else best = pick([G, T0, T1, S]); // eşitlikte düz blok tercih edilir (kolay istif)
+
+      // Bloğu palet üzerinde ortala (dıştan shrink için simetrik, taşmasız)
+      let out = best.pts;
+      if (out.length) {
+        const minX = Math.min(...out.map(p => p.x)) - r, maxX = Math.max(...out.map(p => p.x)) + r;
+        const minY = Math.min(...out.map(p => p.y)) - r, maxY = Math.max(...out.map(p => p.y)) + r;
+        const dx = (palletW - (maxX - minX)) / 2 - minX, dy = (palletH - (maxY - minY)) / 2 - minY;
+        out = out.map(p => ({ x: p.x + dx, y: p.y + dy }));
+      }
+      return { positions: out, label: best.label };
+    }
+
+    // Referans Tablosu Modalını Doldur ve Aç/Kapat
+    function initRefTable() {
+      document.getElementById('refTableBody').innerHTML = PL_F_010_TABLE.map((row, i) => {
+        const midW = Math.round((row.minW + row.maxW) / 2), ap = getAparatInfo(midW);
+        return `<tr onclick="selectFromRef(${midW})" class="hover:bg-blue-50 cursor-pointer transition">
+          <td class="py-2.5 px-3 font-bold text-slate-800">${row.label}</td>
+          <td class="py-2.5 px-3 font-semibold text-blue-900">${ap.name} (${ap.code})</td>
+          <td class="py-2.5 px-3 text-center text-slate-600">${ap.inner} / ${ap.height} cm</td>
+          <td class="py-2.5 px-3 text-center font-extrabold text-slate-900">${row.base}</td>
+          <td class="py-2.5 px-3 text-center font-extrabold text-emerald-700">${row.base * 7}</td>
+          <td class="py-2.5 px-3 text-right whitespace-nowrap"><button onclick="event.stopPropagation();editRefRow(${i})" class="font-bold px-1.5 cursor-pointer">✎</button><button onclick="event.stopPropagation();delRefRow(${i})" class="font-bold text-red-600 px-1.5 cursor-pointer">✕</button></td></tr>`;
+      }).join('');
+    }
+
+    // Palet dizilimi üstündeki yatay referans şeridi
+    function initRefStrip() {
+      const rows = [['Dış Ø', r => r.label.replace(' cm', '')], ['Aparat', r => getAparatInfo(Math.round((r.minW + r.maxW) / 2)).name.split(' ')[0]], ['Taban', r => r.base], ['7 Kat', r => r.base * 7]];
+      const td = (t, i, k) => `<td data-i="${i}" onclick="selectFromRef(${Math.round((PL_F_010_TABLE[i].minW + PL_F_010_TABLE[i].maxW) / 2)})" class="px-2.5 py-1 text-center whitespace-nowrap cursor-pointer ${k === 2 ? 'font-extrabold' : 'text-slate-600'} border-l border-slate-100">${t}</td>`;
+      document.getElementById('refStrip').innerHTML = '<table class="text-[11px] w-max min-w-full border-collapse">' + rows.map(([name, fn], k) =>
+        `<tr class="${k === 0 ? 'bg-slate-100 font-bold text-slate-700' : ''} border-b border-slate-100"><th class="sticky left-0 bg-slate-50 px-2.5 py-1 text-left font-bold text-slate-700 whitespace-nowrap">${name}</th>${PL_F_010_TABLE.map((r, i) => td(fn(r), i, k)).join('')}</tr>`).join('') + '</table>';
+    }
+
+    function highlightRefStrip(outerCm) {
+      const c = Math.min(Math.max(Math.round(outerCm), PL_F_010_TABLE[0].minW), PL_F_010_TABLE[PL_F_010_TABLE.length - 1].maxW);
+      const idx = PL_F_010_TABLE.findIndex(r => c >= r.minW && c <= r.maxW);
+      const box = document.getElementById('refStrip');
+      let active = null;
+      box.querySelectorAll('td[data-i]').forEach(el => {
+        const on = Number(el.dataset.i) === idx;
+        el.style.background = on ? '#059669' : '';
+        el.style.color = on ? '#fff' : '';
+        if (on && !active) active = el;
+      });
+      if (active) box.scrollLeft = active.offsetLeft - box.clientWidth / 2 + active.offsetWidth / 2;
+    }
+
+    function selectFromRef(outerCm) {
+      setMode('direct');
+      document.getElementById('inputOuterSlider').value = outerCm;
+      document.getElementById('inputOuterNumber').value = outerCm;
+      calculate();
+      if (!document.getElementById('refModal').classList.contains('hidden')) toggleRefModal();
+    }
+
+    function toggleRefModal() {
+      const modal = document.getElementById('refModal');
+      modal.classList.toggle('hidden');
+    }
+
+    // Sayfa yüklendiğinde başlat
+    window.addEventListener('DOMContentLoaded', () => {
+      refreshAparatSelect('auto');
+      initPresetSelect();
+      initRefTable();
+      initRefStrip();
+      calculate();
+    });
+  </script>
+  <script>
+    // ================= MAKARA MODÜLÜ =================
+    const MK_TYPES = {
+      mdf:    { label: 'MDF', fill: '#ecd3a8', edge: '#a67c4a', holes: true },
+      karton: { label: 'Karton', fill: '#d9d9d9', edge: '#334155', holes: false },
+      plastik:{ label: 'Plastik', fill: '#7cb4f5', edge: '#1e3a8a', holes: true }
+    };
+    // A = flanş Ø, C = yükseklik, D = göbek Ø (mm) • hacim cm³ (Excel'deki 23.562 = 23562 cm³) • kapasite/dara kg
+    const mkR = (n, A, C, D, hacim, kapasite, dara) => ({ n, A, C, D, hacim, kapasite, dara });
+    const MK_DEFAULT = {
+      mdf: [
+        mkR('MDF MAKARA 286x200x150', 286, 200, 150, 5972, 20, 1.00),
+        mkR('MDF MAKARA 333x200x150', 333, 200, 150, 9951, 30, 1.20),
+        mkR('MDF MAKARA 333x300x150', 333, 300, 150, 12259, 45, 1.40),
+        mkR('MDF MAKARA 388x300x150', 388, 300, 150, 20047, 60, 1.40),
+        mkR('MDF MAKARA 444x300x150', 444, 300, 150, 29442, 60, 2.10),
+        mkR('MDF MAKARA 488x350x150', 488, 350, 150, 40703, 80, 3.00),
+        mkR('MDF MAKARA 544x400x200', 544, 400, 200, 55071, 110, 4.20),
+        mkR('MDF MAKARA 588x400x200', 588, 400, 200, 68507, 130, 5.90),
+      ],
+      karton: [
+        mkR('KARTON MAKARA 191x200x80', 191, 200, 80, 2545, 8, 0),
+        mkR('KARTON MAKARA 230x200x80', 230, 200, 80, 4665, 10, 0.75),
+        mkR('KARTON MAKARA 266x200x80', 266, 200, 80, 7018, 12, 1.00),
+      ],
+      plastik: [
+        mkR('PLASTİK MAKARA CS 185x78x114', 185, 78, 114, 23562, 10, 0),
+        mkR('PLASTİK MAKARA CS 200x78x114', 200, 78, 114, 28599, 12, 0),
+        mkR('PLASTİK MAKARA CS 260x78x114', 260, 78, 114, 52773, 15, 0),
+      ]
+    };
+    const MK_PALLETS = [
+      { id: 'euro', name: 'Euro Palet', l: 120, w: 80, h: 15, shrink: 'Baskılı Shrink' },
+      { id: 'epal', name: 'EPAL Palet', l: 120, w: 80, h: 15, shrink: 'Şeffaf Shrink' }
+    ];
+    const mk = { mode: 'auto', type: 'mdf', sel: 0, pal: 'euro', data: null, pals: null };
+    const $ = (id) => document.getElementById(id);
+    const clone = (o) => JSON.parse(JSON.stringify(o));
+
+    // Sayı okuma: virgül de nokta da kabul (8,7 / 8.7). pvol: Excel TR hacmi (23.562 = 23562)
+    const pf = (v) => { const n = parseFloat(String(v == null ? '' : v).trim().replace(/\s/g, '').replace(',', '.')); return isNaN(n) ? 0 : n; };
+    const pvol = (v) => { let s = String(v == null ? '' : v).trim().replace(/\s/g, ''); if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.'); else if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, ''); const n = parseFloat(s); return isNaN(n) ? 0 : n; };
+    const fmt = (n, d = 0) => Number(n).toLocaleString('tr-TR', { maximumFractionDigits: d });
+    const mkAuto = (A, C, D) => Math.max(0, (Math.pow(A - 40, 2) - D * D) * 0.7854 * C / 1000);
+
+    function mkLoad() {
+      mk.data = clone(MK_DEFAULT); mk.pals = clone(MK_PALLETS);
+      try {
+        const o3 = JSON.parse(localStorage.getItem('makaraStateV3'));
+        if (o3 && o3.data && o3.pals) { mk.data = o3.data; mk.pals = o3.pals; return; }
+        const o2 = JSON.parse(localStorage.getItem('makaraStateV2'));
+        if (o2 && o2.pals && o2.data) {
+          mk.pals = o2.pals;
+          Object.keys(MK_DEFAULT).forEach(t => (o2.data[t] || []).forEach(r => {
+            if (!mk.data[t].some(x => x.A === r.A && x.C === r.C && x.D === r.D)) mk.data[t].push({ ...r, hacim: Math.round((Number(r.hacim) || 0) * 1000) });
+          }));
+          mkSave();
+        }
+      } catch (e) {}
+    }
+    function mkSave() { try { localStorage.setItem('makaraStateV3', JSON.stringify({ data: mk.data, pals: mk.pals })); } catch (e) {} }
+
+    function mkSetMode(m) { mk.mode = m; if (m !== 'auto') mk.type = m; mk.sel = 0; mkAutoCalc(); }
+    function mkSetType(t) { mk.type = t; mk.sel = 0; $('mkCalcBadge').innerText = 'Elle seçim'; mkRender(); }
+    function mkSelect(i) { mk.sel = parseInt(i) || 0; $('mkCalcBadge').innerText = 'Elle seçim'; mkRender(); }
+    function mkSelPal(id) { mk.pal = id; mkRender(); }
+    function mkCloseModals() { $('mkFormModal').classList.add('hidden'); $('mkPalModal').classList.add('hidden'); }
+
+    // ---- Makara ekle / düzenle (hazır ölçüler dahil) ----
+    let mkEd = null;
+    function mkOpenForm(edit) {
+      const r = edit ? mk.data[mk.type][mk.sel] : null;
+      if (edit && !r) return;
+      mkEd = edit ? { t: mk.type, i: mk.sel } : null;
+      $('mkFTitle').innerText = edit ? 'Makarayı Düzenle' : 'Yeni Makara Ekle';
+      const dec = (x) => x ? String(x).replace('.', ',') : '';
+      $('mkFName').value = r ? r.n : ''; $('mkFType').value = r ? mk.type : mk.type;
+      $('mkFA').value = r ? dec(r.A) : ''; $('mkFC').value = r ? dec(r.C) : ''; $('mkFD').value = r ? dec(r.D) : '';
+      $('mkFHacim').value = r ? fmt(r.hacim) : ''; $('mkFKg').value = r ? dec(r.kapasite) : ''; $('mkFDara').value = r ? dec(r.dara) : '';
+      $('mkFDel').classList.toggle('hidden', !edit);
+      $('mkFormModal').classList.remove('hidden');
+    }
+    function mkSaveForm() {
+      const A = pf($('mkFA').value), C = pf($('mkFC').value), D = pf($('mkFD').value), type = $('mkFType').value;
+      if (!(A >= 60 && C > 0 && D >= 0 && D < A)) { alert('Flanş Ø, yükseklik ve göbek Ø değerlerini mm olarak doğru girin.'); return; }
+      const hv = pvol($('mkFHacim').value), hacim = hv > 0 ? Math.round(hv) : Math.round(mkAuto(A, C, D));
+      const name = ($('mkFName').value || '').trim() || `${MK_TYPES[type].label.toUpperCase()} MAKARA ${A}x${C}x${D}`;
+      const row = mkR(name, A, C, D, hacim, pf($('mkFKg').value), pf($('mkFDara').value));
+      if (mkEd && mkEd.t === type) mk.data[type][mkEd.i] = row;
+      else { if (mkEd) mk.data[mkEd.t].splice(mkEd.i, 1); mk.data[type].push(row); }
+      mk.type = type; if (mk.mode !== 'auto') mk.mode = type; mk.sel = mk.data[type].indexOf(row);
+      mkCloseModals(); mkSave(); $('mkCalcBadge').innerText = 'Elle seçim'; mkRender();
+    }
+    function mkEditRow(i) { mk.sel = i; mkRender(); mkOpenForm(true); }
+    function mkDelRow(i) {
+      const t = mkEd && !$('mkFormModal').classList.contains('hidden') ? mkEd.t : mk.type;
+      const idx = (typeof i === 'number') ? i : (mkEd ? mkEd.i : mk.sel);
+      if (!confirm('Bu makara silinsin mi?')) return;
+      mk.data[t].splice(idx, 1); mk.sel = 0; mkCloseModals(); mkSave(); mkRender();
+    }
+    function mkReset() { if (confirm('Makara listesi ve paletler varsayılana dönsün mi?')) { mk.data = clone(MK_DEFAULT); mk.pals = clone(MK_PALLETS); mk.pal = 'euro'; mk.type = 'mdf'; mk.mode = 'auto'; mk.sel = 0; mkSave(); mkRender(); } }
+
+    // ---- Palet ekle / düzenle ----
+    let mkPEd = false;
+    function mkOpenPal(edit) {
+      const p = edit ? mk.pals.find(x => x.id === mk.pal) : null;
+      mkPEd = !!p;
+      $('mkPTitle').innerText = p ? 'Paleti Düzenle' : 'Yeni Palet Ekle';
+      $('mkPN').value = p ? p.name : ''; $('mkPL').value = p ? p.l : ''; $('mkPW').value = p ? p.w : ''; $('mkPH').value = p ? p.h : '';
+      $('mkPS').value = p ? p.shrink : 'Baskılı Shrink';
+      $('mkPDel').classList.toggle('hidden', !p || p.id === 'euro' || p.id === 'epal');
+      $('mkPalModal').classList.remove('hidden');
+    }
+    function mkSavePal() {
+      const l = pf($('mkPL').value), w = pf($('mkPW').value), h = pf($('mkPH').value);
+      if (!(l >= 30 && w >= 30 && h > 0)) { alert('Boy, en ve yükseklik değerlerini cm olarak girin.'); return; }
+      const name = ($('mkPN').value || '').trim() || `Palet ${l}×${w}`;
+      const data = { name, l: Math.max(l, w), w: Math.min(l, w), h, shrink: $('mkPS').value };
+      if (mkPEd) Object.assign(mk.pals.find(x => x.id === mk.pal), data);
+      else { const id = 'p' + Date.now(); mk.pals.push({ id, ...data }); mk.pal = id; }
+      mkCloseModals(); mkSave(); mkRender();
+    }
+    function mkDelPal() { if (mk.pal === 'euro' || mk.pal === 'epal') return; mk.pals = mk.pals.filter(p => p.id !== mk.pal); mk.pal = 'euro'; mkCloseModals(); mkSave(); mkRender(); }
+
+    // ---- Excel'den yapıştır: Makara adı | Hacim | Taşıma kg | (Dara) ----
+    function mkImport() {
+      let n = 0;
+      $('mkPaste').value.split(/\r?\n/).forEach(line => {
+        const c = line.split(/[\t;]/).map(x => x.trim());
+        const m = (c[0] || '').match(/(\d{2,4})\s*[x×]\s*(\d{2,4})\s*[x×]\s*(\d{2,4})/i);
+        if (!m) return;
+        const A = +m[1], C = +m[2], D = +m[3];
+        const type = /karton/i.test(c[0]) ? 'karton' : /pl[aâ]st[iİı]k/i.test(c[0]) ? 'plastik' : /mdf/i.test(c[0]) ? 'mdf' : mk.type;
+        const hv = pvol(c[1]), row = mkR(c[0], A, C, D, hv > 0 ? Math.round(hv) : Math.round(mkAuto(A, C, D)), pf(c[2]), pf(c[3]));
+        const i = mk.data[type].findIndex(r => r.n === row.n);
+        if (i >= 0) mk.data[type][i] = row; else mk.data[type].push(row);
+        n++;
+      });
+      if (n) { $('mkPaste').value = ''; mkSave(); mkRender(); } else alert('Satır bulunamadı. Ad içinde 333x200x150 gibi ölçü olmalı; sütunlar Tab veya ; ile ayrılmalı.');
+    }
+
+    // ---- Çizim: palet DİKEY (en × boy), ekrana tam sığacak ölçeklenir ----
+    function mkDraw(positions, row, pal, type) {
+      const cv = $('mkCanvas'), ctx = cv.getContext('2d'), box = $('mkCanvasBox');
+      const W0 = pal.w, H0 = pal.l;
+      const availW = Math.max(140, box.clientWidth - 6), maxH = Math.max(280, window.innerHeight * 0.68);
+      const s = Math.min(availW / W0, maxH / H0, 6), W = W0 * s, H = H0 * s, dpr = window.devicePixelRatio || 1, fx = W0 / 80;
+      cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + 'px'; cv.style.height = H + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      // Palet: üstte 5 tahta (en boyunca), altta 3 takoz (boy boyunca)
+      ctx.fillStyle = '#2a1c11'; ctx.fillRect(0, 0, W, H);
+      [0, (H0 - 14.5) / 2, H0 - 14.5].forEach(y => { ctx.fillStyle = '#9a6f3f'; ctx.fillRect(0, y * s, W, 14.5 * s); });
+      const tones = ['#d9b47a', '#cfa66a', '#ddbb84', '#d2ab70', '#d7b277'];
+      [[0, 14.5], [18.625, 10], [32.75, 14.5], [51.375, 10], [65.5, 14.5]].forEach(([x, w], i) => {
+        const bx = x * fx * s, bw = w * fx * s, g = ctx.createLinearGradient(bx, 0, bx + bw, 0);
+        g.addColorStop(0, '#e6c791'); g.addColorStop(0.5, tones[i]); g.addColorStop(1, '#b98f58');
+        ctx.fillStyle = g; ctx.fillRect(bx, 0, bw, H);
+        ctx.strokeStyle = 'rgba(50,28,10,0.7)'; ctx.lineWidth = 1; ctx.strokeRect(bx, 0, bw, H);
+      });
+      const T = MK_TYPES[type], R = row.A / 20 * s, rc = row.D / 20 * s;
+      positions.forEach((p, i) => {
+        const cx = p.x * s, cy = p.y * s;
+        ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 8; ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 3;
+        ctx.fillStyle = T.fill; ctx.beginPath(); ctx.arc(cx, cy, R - 0.5, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+        const g = ctx.createRadialGradient(cx - R * 0.3, cy - R * 0.3, R * 0.1, cx, cy, R);
+        g.addColorStop(0, 'rgba(255,255,255,0.45)'); g.addColorStop(1, 'rgba(0,0,0,0.12)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, R - 0.5, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = T.edge; ctx.lineWidth = 1.4; ctx.stroke();
+        if (T.holes) [45, 135, 225, 315].forEach(a => { const rr = (R + rc) / 2, ang = a * Math.PI / 180; ctx.fillStyle = '#4b3621'; ctx.beginPath(); ctx.arc(cx + Math.cos(ang) * rr, cy + Math.sin(ang) * rr, Math.max(2, R * 0.05), 0, Math.PI * 2); ctx.fill(); });
+        const hg = ctx.createRadialGradient(cx, cy, rc * 0.2, cx, cy, rc);
+        hg.addColorStop(0, '#2a1c11'); hg.addColorStop(1, '#0b0f19');
+        ctx.fillStyle = hg; ctx.beginPath(); ctx.arc(cx, cy, Math.max(2, rc), 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = T.edge; ctx.lineWidth = 1.2; ctx.stroke();
+        const br = Math.max(6, Math.min(11, rc * 0.6));
+        ctx.fillStyle = 'rgba(255,255,255,0.93)'; ctx.beginPath(); ctx.arc(cx, cy, br, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#0f172a'; ctx.font = `700 ${Math.round(br * 1.1)}px Inter, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(String(i + 1), cx, cy + 0.5);
+      });
+    }
+
+    function mkPerM() {
+      if (($('mkCalcResult').dataset.type || 'yuvarlak') === 'yuvarlak') {
+        const d = pf($('mkCalcCap').value); if (d <= 0) return 0;
+        const tol = d <= 20 ? 1.03 : d <= 50 ? 1.05 : 1.10; return Math.pow(d * tol, 2) * 0.7854; // mm² = cm³/m
+      }
+      const en = pf($('mkCalcW').value), boy = pf($('mkCalcH').value); return en > 0 && boy > 0 ? en * boy * 1.05 : 0;
+    }
+
+    function mkRender() {
+      if (!mk.data) mkLoad();
+      const list = mk.data[mk.type] || [];
+      if (mk.sel >= list.length) mk.sel = Math.max(0, list.length - 1);
+      const row = list[mk.sel], pal = mk.pals.find(p => p.id === mk.pal) || mk.pals[0];
+      $('mkTabs').innerHTML = [['auto', '⚡ Otomatik'], ...Object.keys(MK_TYPES).map(t => [t, `${MK_TYPES[t].label} (${mk.data[t].length})`])].map(([m, l]) => `<button type="button" onclick="mkSetMode('${m}')" class="px-1 py-2 text-xs font-bold rounded-xl border cursor-pointer ${m === mk.mode ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-700 border-slate-300'}">${l}</button>`).join('');
+      $('mkKpiM').innerText = '';
+      $('mkSelRow').innerHTML = list.length ? list.map((r, i) => `<option value="${i}" ${i === mk.sel ? 'selected' : ''}>${r.n}</option>`).join('') : '<option value="">— Liste boş —</option>';
+      $('mkSelPal').innerHTML = mk.pals.map(p => `<option value="${p.id}" ${p.id === pal.id ? 'selected' : ''}>${p.name} (${p.l}×${p.w}×${p.h} cm) • ${p.shrink}</option>`).join('');
+      $('mkListTitle').innerText = `${MK_TYPES[mk.type].label} Makara Listesi`;
+      $('mkTable').innerHTML = list.length ? list.map((r, i) => `<tr onclick="mkSelect(${i})" class="border-b border-slate-100 cursor-pointer ${i === mk.sel ? 'bg-emerald-50 font-bold' : 'hover:bg-slate-50'}"><td class="p-2">${r.n}<div class="text-[10px] font-normal text-slate-500">Ø${fmt(r.A, 1)} • Yük. ${fmt(r.C, 1)} • Göbek ${fmt(r.D, 1)} mm</div></td><td class="p-2 text-blue-800">${fmt(r.hacim)}</td><td class="p-2 text-red-700">${r.kapasite ? fmt(r.kapasite, 1) : '–'}</td><td class="p-2">${r.dara ? fmt(r.dara, 2) : '–'}</td><td class="p-2 whitespace-nowrap"><button type="button" onclick="event.stopPropagation();mkEditRow(${i})" class="text-slate-700 font-bold px-1 cursor-pointer">✎</button><button type="button" onclick="event.stopPropagation();mkDelRow(${i})" class="text-red-600 font-bold px-1 cursor-pointer">✕</button></td></tr>`).join('') : '<tr><td colspan="5" class="p-3 text-slate-500">Bu tip için liste yok.</td></tr>';
+      
+      $('mkDimTop').innerText = `◄ ${pal.w} cm ►`; $('mkDimBot').innerText = `${pal.l} cm boy (dikey gösterim)`;
+      if (!row) { ['mkStBase', 'mkStKat', 'mkStTot', 'mkStH'].forEach(i => $(i).innerText = '0'); $('mkChipLay').innerText = ''; $('mkMsgs').innerHTML = ''; $('mkSide').innerHTML = ''; $('mkSideLbl').innerText = ''; $('mkSelectedInfo').innerHTML = ''; mkDraw([], { A: 100, D: 30 }, pal, mk.type); return; }
+      const maxH = (pf($('mkMaxH').value) || 110) * 10;
+      const pk = computeCollisionFreePacking(pal.w, pal.l, row.A / 10, 999, $('mkMax').checked ? 'auto' : 'grid');
+      const taban = pk.positions.length, kat = Math.max(0, Math.floor((maxH - pal.h * 10) / row.C)), toplam = taban * kat, height = pal.h * 10 + kat * row.C;
+      $('mkStBase').innerText = taban; $('mkStKat').innerText = kat; $('mkStTot').innerText = toplam; $('mkStH').innerText = fmt(height / 10, 1) + ' cm'; $('mkChipLay').innerText = '📐 ' + pk.label;
+      const chip = (k, v) => `<div class="bg-slate-50 border border-slate-200 rounded-lg p-1.5"><div class="text-[10px] font-semibold text-slate-500">${k}</div><div class="text-sm font-extrabold text-slate-800">${v}</div></div>`;
+      $('mkSelectedInfo').innerHTML = chip('Flanş Ø', fmt(row.A, 1) + ' mm') + chip('Yükseklik', fmt(row.C, 1) + ' mm') + chip('Göbek Ø', fmt(row.D, 1) + ' mm') + chip('Hacim', fmt(row.hacim) + ' cm³') + chip('Taşıma', row.kapasite ? fmt(row.kapasite, 1) + ' kg' : '–') + chip('Dara', row.dara ? fmt(row.dara, 2) + ' kg' : '–');
+      const kg = pf($('mkCalcKg').value), perM = mkPerM(), msg = [];
+      $('mkKpiM').innerText = perM > 0 ? '≈ ' + fmt(Math.floor(row.hacim / perM) * toplam) + ' m kablo' : '';
+      if (taban === 0) msg.push(['warn', '⚠️ Bu makara seçili palete sığmıyor.']);
+      if (height > maxH) msg.push(['warn', `⚠️ Toplam yükseklik ${fmt(height / 10, 1)} cm, sınır ${fmt(maxH / 10, 1)} cm.`]);
+      if (perM > 0) { const per = Math.floor(row.hacim / perM); msg.push(['info', `🔌 Yaklaşık ${fmt(per)} m / makara • ${fmt(per * toplam)} m / palet (${toplam} makara).`]); }
+      if (kg > 0 && row.kapasite && row.kapasite < kg) msg.push(['warn', `⚠️ Taşıma kapasitesi ${fmt(row.kapasite, 1)} kg; girilen ${fmt(kg, 1)} kg için uygun değil.`]);
+      $('mkMsgs').innerHTML = msg.map(([t, x]) => `<div class="px-3 py-2 rounded-lg border ${t === 'warn' ? 'bg-amber-50 border-amber-300 text-amber-900' : 'bg-blue-50 border-blue-200 text-blue-900'}">${x}</div>`).join('');
+      const scale = Math.max(maxH, height), side = [`<div style="height:${pal.h * 10 / scale * 100}%" class="bg-amber-800 text-white text-[9px] font-bold flex items-center justify-center">Palet</div>`];
+      for (let i = 0; i < kat; i++) side.push(`<div style="height:${row.C / scale * 100}%" class="bg-blue-600 border-t border-white/60 text-white text-[9px] font-bold flex items-center justify-center">${i + 1}</div>`);
+      $('mkSide').innerHTML = side.join('') + (height > maxH ? '' : `<div class="absolute w-full border-t-2 border-dashed border-red-600" style="bottom:100%"></div>`);
+      $('mkSideLbl').innerText = `${fmt(height / 10, 1)} / ${fmt(maxH / 10, 1)} cm`;
+      mkDraw(pk.positions, row, pal, mk.type);
+    }
+
+    function mkSetCableType(type) {
+      $('mkRoundFields').classList.toggle('hidden', type !== 'yuvarlak'); $('mkFlatFields').classList.toggle('hidden', type === 'yuvarlak');
+      $('mkCableRound').className = 'flex-1 px-2 py-2 text-xs font-bold rounded-xl border ' + (type === 'yuvarlak' ? 'bg-blue-900 text-white border-blue-900' : 'bg-white text-slate-700 border-slate-300');
+      $('mkCableFlat').className = 'flex-1 px-2 py-2 text-xs font-bold rounded-xl border ' + (type === 'yassi' ? 'bg-blue-900 text-white border-blue-900' : 'bg-white text-slate-700 border-slate-300');
+      $('mkCalcResult').dataset.type = type; mkAutoCalc();
+    }
+    function mkAutoCalc() {
+      if (!mk.data) mkLoad();
+      const type = $('mkCalcResult').dataset.type || 'yuvarlak', len = pf(type === 'yuvarlak' ? $('mkCalcLen').value : $('mkCalcLenFlat').value), kg = pf($('mkCalcKg').value), perM = mkPerM();
+      if (!(len > 0) || !(perM > 0)) { $('mkCalcResult').innerHTML = '<b>Ölçü ve uzunluğu girin.</b>'; mkRender(); return; }
+      const need = perM * len;
+      const all = Object.keys(mk.data).filter(t => mk.mode === 'auto' || t === mk.mode).flatMap(t => mk.data[t].map(r => ({ ...r, type: t })));
+      const ok = all.filter(r => r.hacim >= need && (kg === 0 || (r.kapasite || 0) >= kg)).sort((a, b) => a.hacim - b.hacim);
+      if (!ok.length) { $('mkCalcResult').innerHTML = `<div class="text-red-700 font-bold">Uygun makara bulunamadı.</div><div>Gereken hacim: <b>${fmt(need)} cm³</b>${kg ? ' • Ağırlık: ' + fmt(kg, 1) + ' kg' : ''}</div>`; $('mkCalcBadge').innerText = 'Uygun yok'; mkRender(); return; }
+      const m = ok[0]; mk.type = m.type; mk.sel = mk.data[m.type].findIndex(r => r.n === m.n);
+      $('mkCalcResult').innerHTML = `<div class="text-emerald-800 font-bold">✓ ÖNERİLEN: ${m.n}</div><div>Gereken hacim: <b>${fmt(need)} cm³</b> • Makara: <b>${fmt(m.hacim)} cm³</b></div><div>Taşıma: <b>${m.kapasite ? fmt(m.kapasite, 1) : '–'} kg</b> • Dara: <b>${m.dara ? fmt(m.dara, 2) : '–'} kg</b></div>`;
+      $('mkCalcBadge').innerText = mk.mode === 'auto' ? 'Otomatik seçildi' : 'Otomatik • ' + MK_TYPES[mk.mode].label; mkRender();
+    }
+
+    // Görünüm yönetimi (giriş / kangal / makara)
+    function showView(v) {
+      [['kangal', 'viewKangal'], ['makara', 'viewMakara']].forEach(([k, id]) => { $(id).style.display = k === v ? 'flex' : 'none'; });
+      if (v === 'kangal') { try { calculate(); } catch (e) { /* hesaplama hatası yok sayılır */ } }
+      if (v === 'makara') mkRender();
+      window.scrollTo(0, 0);
+      try { history.replaceState(null, '', '#' + v); try { localStorage.setItem('lastView', v); } catch (e) {} } catch (e) { /* dosya modunda olabilir */ }
+    }
+    window.addEventListener('resize', () => { if ($('viewMakara').style.display !== 'none') mkRender(); if ($('viewKangal').style.display !== 'none') calculate(); });
+    window.addEventListener('DOMContentLoaded', () => {
+      mkLoad();
+      mkSetCableType('yuvarlak');
+      const h = location.hash.replace('#', '');
+      let last = ''; try { last = localStorage.getItem('lastView'); } catch (e) {}
+      showView(h === 'kangal' || h === 'makara' ? h : (last === 'makara' ? 'makara' : 'kangal'));
+    });
+  </script>
+  <script>
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+    }
+  </script>
+</body>
+</html>
