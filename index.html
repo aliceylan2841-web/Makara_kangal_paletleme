@@ -115,7 +115,7 @@
           </div>
           <div id="panelCable" class="space-y-3">
             <div>
-              <label for="selectPreset" class="block text-xs font-bold text-slate-700 mb-1">Hızlı Kablo Seçimi</label>
+              <div class="flex items-center justify-between mb-1"><label for="selectPreset" class="text-xs font-bold text-slate-700">Hızlı Kablo Seçimi</label><button type="button" onclick="lmOpen('kb')" class="text-[11px] font-semibold text-blue-800 underline cursor-pointer">✎ Kablo listesi</button></div>
               <select id="selectPreset" onchange="applyCablePreset(this.value)" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-semibold"></select>
               <div id="presetNote" class="text-[11px] text-slate-500 mt-1"></div>
             </div>
@@ -131,7 +131,7 @@
               <div class="flex items-center gap-1.5"><input type="number" id="inputOuterNumber" value="25" min="18" max="75" step="1" oninput="syncOuterFromNumber()" class="w-20 px-2.5 py-1 text-center font-extrabold text-blue-900 bg-white border border-slate-300 rounded-lg" /><span class="text-xs font-bold text-slate-600">cm</span></div>
             </div>
             <input type="range" id="inputOuterSlider" value="25" min="18" max="75" step="1" oninput="syncOuterFromSlider()" class="w-full h-2 bg-slate-300 rounded-lg cursor-pointer" />
-            <div class="flex justify-between text-[11px] font-medium text-slate-500 mt-1"><span>18 (Yeni)</span><span>41 (Orta)</span><span>51–75 (Büyük)</span></div>
+            <div class="flex justify-between text-[11px] font-medium text-slate-500 mt-1"><span>18 (Küçük)</span><span>41 (Orta)</span><span>51–75 (Büyük)</span></div>
           </div>
           <div>
             <label for="selectSales" class="block text-xs font-bold text-slate-700 mb-1">Satış Tipi (Palet & Shrink)</label>
@@ -147,16 +147,14 @@
           <div class="flex flex-wrap gap-2">
             <select id="selectAparat" onchange="calculate()" class="flex-1 min-w-[180px] px-3 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-semibold"></select>
             <span id="aparatIcon" class="inline-flex items-center gap-1.5 px-2 py-1 rounded-xl bg-amber-50 border border-amber-200 text-[11px] font-bold text-amber-900"></span>
-            <button type="button" onclick="document.getElementById('aparatForm').classList.toggle('hidden')" class="px-3 py-2 text-xs font-bold rounded-xl bg-blue-900 text-white cursor-pointer">+ Aparat</button>
-            <button type="button" id="btnRemoveAparat" onclick="removeAparat()" class="hidden px-3 py-2 text-xs font-bold rounded-xl bg-red-600 text-white cursor-pointer">− Çıkar</button>
-          </div>
-          <div id="aparatForm" class="hidden grid grid-cols-2 sm:grid-cols-4 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
-            <input id="newApName" type="text" placeholder="Ad (ops.)" class="px-2.5 py-2 text-xs rounded-lg border border-slate-300" />
-            <input id="newApInner" type="text" inputmode="decimal" placeholder="Göbek Ø cm" class="px-2.5 py-2 text-xs rounded-lg border border-slate-300" />
-            <input id="newApH" type="text" inputmode="decimal" placeholder="Yükseklik cm" class="px-2.5 py-2 text-xs rounded-lg border border-slate-300" />
-            <button type="button" onclick="addAparat()" class="px-3 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white cursor-pointer">Ekle</button>
+            <button type="button" onclick="lmOpen('ap')" class="px-3 py-2 text-xs font-bold rounded-xl bg-slate-700 text-white cursor-pointer">⚙️ Düzenle</button>
           </div>
           <div id="noteAparat" class="rounded-xl border-l-4 border-amber-500 bg-amber-50 px-3 py-2 text-xs text-amber-950 leading-relaxed"></div>
+          <div>
+            <div class="flex items-center justify-between mb-1"><label for="selectShrink" class="text-[11px] font-bold text-slate-700">Shrink Naylonu</label><button type="button" onclick="lmOpen('sh')" class="text-[11px] font-semibold text-blue-800 underline cursor-pointer">✎ Shrink listesi</button></div>
+            <select id="selectShrink" onchange="calculate()" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 bg-white text-xs font-semibold"></select>
+            <div id="noteShrink" class="mt-2 rounded-xl border-l-4 border-blue-500 bg-blue-50 px-3 py-2 text-xs text-blue-950 leading-relaxed"></div>
+          </div>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
             <div><label for="selectLayers" class="block text-[11px] font-bold text-slate-700 mb-1">Kat Sınırı</label>
               <select id="selectLayers" onchange="calculate()" class="w-full px-2 py-2.5 rounded-xl border border-slate-300 bg-white text-xs font-semibold">
@@ -249,6 +247,24 @@
     </div>
   </div>
 
+  
+<!-- Liste yöneticisi: aparat / shrink / kablo -->
+  <div id="listModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-200">
+      <div class="px-4 py-3 bg-slate-900 text-white flex items-center justify-between"><h3 class="font-bold text-sm">Listeleri Düzenle</h3><button onclick="lmClose()" class="text-slate-300 hover:text-white text-lg cursor-pointer">✕</button></div>
+      <div id="lmTabs" class="flex flex-wrap gap-1.5 p-3 border-b border-slate-200"></div>
+      <div class="overflow-auto p-3 flex-1"><table class="w-full text-xs"><thead id="lmHead"></thead><tbody id="lmBody"></tbody></table></div>
+      <div id="lmForm" class="hidden p-3 bg-amber-50 border-t border-amber-200 space-y-2">
+        <div id="lmFormTitle" class="text-xs font-bold text-slate-800"></div>
+        <div id="lmFields" class="grid grid-cols-2 gap-2"></div>
+        <div class="flex gap-2"><button type="button" onclick="lmSave()" class="flex-1 px-3 py-2 rounded-lg bg-emerald-600 text-white font-bold text-sm cursor-pointer">Kaydet</button><button type="button" onclick="document.getElementById('lmForm').classList.add('hidden')" class="px-3 py-2 rounded-lg bg-slate-200 text-slate-800 font-bold text-sm cursor-pointer">İptal</button></div>
+      </div>
+      <div class="p-3 bg-slate-50 border-t border-slate-200 flex justify-between gap-2">
+        <div class="flex gap-2"><button type="button" onclick="lmEdit(-1)" class="px-3 py-2 bg-blue-900 text-white text-xs font-semibold rounded-xl cursor-pointer">+ Satır Ekle</button><button type="button" onclick="lmReset()" class="px-3 py-2 bg-slate-600 text-white text-xs font-semibold rounded-xl cursor-pointer">Varsayılana Dön</button></div>
+        <button type="button" onclick="lmClose()" class="px-4 py-2 bg-slate-800 text-white text-xs font-semibold rounded-xl cursor-pointer">Kapat</button>
+      </div>
+    </div>
+  </div>
   
 </div><!-- /viewKangal -->
 
@@ -462,74 +478,149 @@
     }
     function resetRef() { if (confirm('Referans tablosu varsayılana dönsün mü?')) { PL_F_010_TABLE = JSON.parse(JSON.stringify(PL_DEFAULT)); refreshRef(); } }
 
-    // ---- Hızlı kablo seçimi (Excel listesi: 100 m paket, göbek 15/30, yükseklik 12) ----
-    // i = Excel'deki kangal göbeği, w = Excel'in hesapladığı dış genişlik. Çap, Excel formülünün tersinden bulunur.
+    // ---- Kalıcı listeler: Aparat • Shrink • Kablo (düzenle / sil / ekle) ----
+    const lsGet = (k) => { try { const v = JSON.parse(localStorage.getItem(k)); return Array.isArray(v) && v.length ? v : null; } catch (e) { return null; } };
+    const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+    const cl = (o) => JSON.parse(JSON.stringify(o));
+    const dc = (n) => String(n).replace('.', ',');
+
     const CABLE_XL = [
       ['H01N2-D', [['1x10', 15, 28], ['1x16', 15, 32], ['1x25', 15, 36], ['1x35', 15, 38], ['1x50', 30, 51], ['1x70', 30, 55]]],
       ['H05RR-F', [['2x0,75', 15, 23], ['2x1', 15, 25], ['2x1,5', 15, 28], ['2x2,5', 15, 32], ['3G1,5', 15, 29], ['3G2,5', 15, 33], ['4x1', 15, 27], ['4x2,5', 15, 36], ['5G1,5', 15, 34], ['5G2,5', 30, 52]]],
       ['H05VV-F', [['3G1,5', 15, 28]]],
       ['H07RN-F', [['2x1', 15, 29], ['2x1,5', 15, 31], ['2x2,5', 15, 34], ['3G1', 15, 30], ['3G1,5', 15, 32], ['3G2,5', 15, 37], ['3G4', 30, 49], ['4G4', 30, 53], ['4x1,5', 15, 35], ['5G2,5', 30, 48], ['5G4', 30, 57]]]
     ];
-    const PRESET_LIST = [
+    // Çap, Excel'deki hesaplanan genişlikten (yükseklik 12) geriye doğru bulundu; i = Excel göbeği (cm)
+    const PRESET_DEFAULT = [
       { g: 'Genel (yaklaşık)', n: '3×1.5 mm²', d: 8.2 }, { g: 'Genel (yaklaşık)', n: '3×2.5 mm²', d: 9.6 }, { g: 'Genel (yaklaşık)', n: '4×4 mm²', d: 12.5 },
       { g: 'Genel (yaklaşık)', n: '1×35 mm²', d: 12.0 }, { g: 'Genel (yaklaşık)', n: '1×70 mm²', d: 16.0 }
     ];
-    CABLE_XL.forEach(([g, rows]) => rows.forEach(([n, i, w]) => PRESET_LIST.push({ g, n: n + ' (Siyah)', i, w, d: Math.round(Math.sqrt((w * w - i * i) * 12 / 105) * 10) / 10 })));
+    CABLE_XL.forEach(([g, rows]) => rows.forEach(([n, i, w]) => PRESET_DEFAULT.push({ g, n: n + ' (Siyah)', i, d: Math.round(Math.sqrt((w * w - i * i) * 12 / 105) * 10) / 10 })));
+    const PRESET_LIST = lsGet('presetsV1') || cl(PRESET_DEFAULT);
+
+    // Shrink naylonu: 80 mikron • 40/60/85/100 cm • Üntel baskılı (iç piyasa) / şeffaf (ihracat)
+    // maxOuter = filmin örtebildiği en büyük kangal dış genişliği (cm). Varsayılan: film genişliği ÷ 1,57. Düzenlenebilir.
+    const SHRINK_DEFAULT = [40, 60, 85, 100].flatMap(w => ['baskili', 'seffaf'].map(t => ({ id: 's' + w + t[0], mikron: 80, w, tip: t, maxOuter: Math.floor(w / 1.5708) })));
+    const SHRINK = lsGet('shrinkV1') || cl(SHRINK_DEFAULT);
+    const shrinkLabel = (s) => `SHIRINK NAYLON ${s.mikron} MİKRON X ${s.w} CM ${s.tip === 'baskili' ? 'ÜNTEL BASKILI' : 'ŞEFFAF'}`;
+    // İç piyasa → baskılı, ihracat → şeffaf; genişlik: kangal dış genişliğini örten en küçük film
+    function pickShrink(outerCm, isExport, selId) {
+      if (selId && selId !== 'auto') { const m = SHRINK.find(x => x.id === selId); if (m) return { s: m, over: outerCm > m.maxOuter, manual: true }; }
+      const tip = isExport ? 'seffaf' : 'baskili', list = SHRINK.filter(x => x.tip === tip).sort((a, b) => a.w - b.w);
+      if (!list.length) return { s: null };
+      const m = list.find(x => outerCm <= x.maxOuter);
+      return { s: m || list[list.length - 1], over: !m };
+    }
+    function refreshShrinkSelect(selId) {
+      const el = document.getElementById('selectShrink');
+      el.innerHTML = '<option value="auto">Otomatik (iç piyasa: baskılı • ihracat: şeffaf)</option>' + SHRINK.map(s => `<option value="${s.id}">${shrinkLabel(s)}</option>`).join('');
+      el.value = selId && (selId === 'auto' || SHRINK.some(s => s.id === selId)) ? selId : 'auto';
+    }
+
     function initPresetSelect() {
-      const groups = []; PRESET_LIST.forEach((p, k) => { let G = groups.find(x => x.g === p.g); if (!G) groups.push(G = { g: p.g, o: [] }); G.o.push(`<option value="${k}">${p.g === 'Genel (yaklaşık)' ? '' : p.g + ' '}${p.n} • Ø${String(p.d).replace('.', ',')} mm${p.w ? ' • ' + p.w + ' cm' : ''}</option>`); });
+      const groups = []; PRESET_LIST.forEach((p, k) => { let G = groups.find(x => x.g === p.g); if (!G) groups.push(G = { g: p.g, o: [] }); G.o.push(`<option value="${k}">${p.g === 'Genel (yaklaşık)' ? '' : p.g + ' '}${p.n} • Ø${dc(p.d)} mm</option>`); });
       document.getElementById('selectPreset').innerHTML = '<option value="">— Kablo seçin —</option>' + groups.map(G => `<optgroup label="${G.g}">${G.o.join('')}</optgroup>`).join('');
     }
     function applyCablePreset(v) {
-      if (v === '') return; const p = PRESET_LIST[+v]; setMode('cable');
-      document.getElementById('inputDiameter').value = String(p.d).replace('.', ','); document.getElementById('inputLength').value = 100;
-      const ap = p.i ? APARATS.find(a => !a.custom && a.inner === p.i && a.height === 12) : null;
+      if (v === '') return; const p = PRESET_LIST[+v]; if (!p) return; setMode('cable');
+      document.getElementById('inputDiameter').value = dc(p.d); document.getElementById('inputLength').value = 100;
+      const ap = p.i ? APARATS.find(a => a.auto && a.inner === p.i) : null;
       document.getElementById('selectAparat').value = ap ? ap.id : 'auto';
-      document.getElementById('presetNote').innerText = p.w ? `Excel: 100 m • göbek Ø${p.i} cm • hesaplanan genişlik ${p.w} cm. Aparat Excel'e göre seçildi; otomatik için "Otomatik"i seçin.` : 'Yaklaşık çap; aparat otomatik seçilir.';
+      document.getElementById('presetNote').innerText = ap ? `Excel göbeği Ø${p.i} cm → ${ap.name} seçildi. Otomatik için "Otomatik"i seçin.` : 'Aparat otomatik seçilir.';
       calculate();
     }
 
 
     let currentMode = 'cable'; // 'cable' veya 'direct'
 
-    // Aparat listesi (standart 3 adet + kullanıcı eklediği özel aparatlar)
-    const APARATS = [
-      { id: 'yeni', name: "YENİ APARAT", code: "40×15×12", inner: 15, height: 12, maxW: 40, custom: false },
-      { id: 'orta', name: "ORTA APARAT", code: "50×25×11", inner: 25, height: 11, maxW: 50, custom: false },
-      { id: 'buyuk', name: "BÜYÜK APARAT", code: "60×30×12", inner: 30, height: 12, maxW: 60, custom: false }
+    // Aparat listesi (düzenlenebilir): genişlik = en büyük kangal dış genişliği; auto = otomatik seçime dahil
+    const AP_DEFAULT = [
+      { id: 'kutuk', name: 'KANGAL/KUTU KÜÇÜK APARAT', maxW: 30, inner: 12, height: 4.5, auto: false },
+      { id: 'kutub', name: 'KANGAL/KUTU BÜYÜK APARAT', maxW: 30, inner: 12, height: 6, auto: false },
+      { id: 'kucuk', name: 'KÜÇÜK APARAT', maxW: 40, inner: 15, height: 12, auto: true },
+      { id: 'orta', name: 'ORTA APARAT', maxW: 50, inner: 25, height: 12, auto: true },
+      { id: 'buyuk', name: 'BÜYÜK APARAT', maxW: 60, inner: 30, height: 15, auto: true }
     ];
+    const APARATS = lsGet('aparatsV1') || cl(AP_DEFAULT);
+    function normAp() { APARATS.forEach(a => { a.code = `${dc(a.maxW)}×${dc(a.inner)}×${dc(a.height)}`; }); }
+    normAp();
+    const autoAparats = () => { const l = APARATS.filter(a => a.auto); return (l.length ? l : APARATS.slice()).sort((x, y) => x.maxW - y.maxW); };
 
-    // PL-F-010 kuralı: dış genişliğe göre aparat
+    // PL-F-010 kuralı: dış genişliğe göre aparat (otomatik seçime dahil olanlar arasından)
     function getAparatInfo(outerCm) {
-      return outerCm <= 40 ? APARATS[0] : (outerCm <= 50 ? APARATS[1] : APARATS[2]);
+      const l = autoAparats();
+      return l.find(a => outerCm <= a.maxW) || l[l.length - 1];
     }
 
     function refreshAparatSelect(selectedId) {
       const sel = document.getElementById('selectAparat');
-      sel.innerHTML = '<option value="auto">Otomatik (PL-F-010 kuralı)</option>' +
-        APARATS.map(a => `<option value="${a.id}">${a.custom ? '★ ' : ''}${a.name} (${a.code})</option>`).join('');
-      sel.value = selectedId || 'auto';
+      sel.innerHTML = '<option value="auto">Otomatik (genişliğe göre)</option>' +
+        APARATS.map(a => `<option value="${a.id}">${a.name} (${a.code})</option>`).join('');
+      sel.value = selectedId && (selectedId === 'auto' || APARATS.some(a => a.id === selectedId)) ? selectedId : 'auto';
     }
 
-    function addAparat() {
-      const inner = pf(document.getElementById('newApInner').value);
-      const h = pf(document.getElementById('newApH').value);
-      if (!(inner >= 5 && inner <= 60 && h >= 5 && h <= 30)) { alert('Göbek çapı 5–60 cm, yükseklik 5–30 cm olmalı.'); return; }
-      const name = (document.getElementById('newApName').value || '').trim().toUpperCase() || 'ÖZEL APARAT';
-      const id = 'c' + Date.now();
-      APARATS.push({ id, name, code: `Ø${inner}×${h}`, inner, height: h, maxW: 75, custom: true });
-      ['newApName', 'newApInner', 'newApH'].forEach(i => document.getElementById(i).value = '');
-      document.getElementById('aparatForm').classList.add('hidden');
-      refreshAparatSelect(id);
-      calculate();
+    // ---- Liste yöneticisi: aparat / shrink / kablo ----
+    const LM = {
+      ap: { t: 'Aparatlar', head: ['Aparat', 'Gen.', 'Göbek', 'Yük.', 'Oto'], list: APARATS, key: 'aparatsV1', def: AP_DEFAULT,
+        row: a => [a.name, dc(a.maxW), dc(a.inner), dc(a.height), a.auto ? '✓' : '–'],
+        fields: [['name', 'Ad', 'text'], ['maxW', 'Genişlik (cm)', 'num'], ['inner', 'Göbek (cm)', 'num'], ['height', 'Yükseklik (cm)', 'num'], ['auto', 'Otomatik seçime dahil', 'check']],
+        blank: { name: '', maxW: '', inner: '', height: '', auto: true },
+        ok: o => o.name && o.maxW > 0 && o.inner > 0 && o.height > 0 && o.inner < o.maxW, msg: 'Ad, genişlik, göbek ve yükseklik girin (göbek < genişlik).',
+        make: o => ({ id: 'a' + Date.now(), ...o }), minRows: 1 },
+      sh: { t: 'Shrink', head: ['Shrink naylonu', 'Maks. kangal'], list: SHRINK, key: 'shrinkV1', def: SHRINK_DEFAULT,
+        row: s => [shrinkLabel(s), dc(s.maxOuter) + ' cm'],
+        fields: [['mikron', 'Mikron', 'num'], ['w', 'Film genişliği (cm)', 'num'], ['tip', 'Tip', 'sel', [['baskili', 'Üntel baskılı (iç piyasa)'], ['seffaf', 'Şeffaf (ihracat)']]], ['maxOuter', 'Maks. kangal genişliği (cm)', 'num']],
+        blank: { mikron: 80, w: '', tip: 'baskili', maxOuter: '' },
+        ok: o => o.mikron > 0 && o.w > 0 && o.maxOuter > 0, msg: 'Mikron, film genişliği ve maks. kangal genişliğini girin.',
+        make: o => ({ id: 's' + Date.now(), ...o }), minRows: 0 },
+      kb: { t: 'Kablolar', head: ['Kablo', 'Ø mm', 'Göbek'], list: PRESET_LIST, key: 'presetsV1', def: PRESET_DEFAULT,
+        row: p => [(p.g === 'Genel (yaklaşık)' ? '' : p.g + ' ') + p.n, dc(p.d), p.i ? p.i : '–'],
+        fields: [['g', 'Grup (ör. H07RN-F)', 'text'], ['n', 'Kablo adı', 'text'], ['d', 'Dış çap (mm)', 'num'], ['i', 'Aparat göbeği cm (ops. 15/30)', 'num']],
+        blank: { g: '', n: '', d: '', i: '' },
+        ok: o => o.n && o.d > 0, msg: 'Kablo adı ve dış çapı girin.', make: o => o, minRows: 0 }
+    };
+    let lmTab = 'ap', lmIdx = -1;
+    function lmOpen(tab) { lmTab = tab || lmTab; lmIdx = -1; document.getElementById('lmForm').classList.add('hidden'); lmRender(); document.getElementById('listModal').classList.remove('hidden'); }
+    function lmClose() { document.getElementById('listModal').classList.add('hidden'); }
+    function lmRender() {
+      const L = LM[lmTab];
+      document.getElementById('lmTabs').innerHTML = Object.keys(LM).map(k => `<button type="button" onclick="lmOpen('${k}')" class="px-3 py-2 text-xs font-bold rounded-xl border cursor-pointer ${k === lmTab ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-700 border-slate-300'}">${LM[k].t} (${LM[k].list.length})</button>`).join('');
+      document.getElementById('lmHead').innerHTML = '<tr class="bg-slate-100 text-slate-700">' + L.head.map(h => `<th class="p-2 text-left">${h}</th>`).join('') + '<th></th></tr>';
+      document.getElementById('lmBody').innerHTML = L.list.map((r, i) => `<tr class="border-b border-slate-100">${L.row(r).map(c => `<td class="p-2">${c}</td>`).join('')}<td class="p-2 text-right whitespace-nowrap"><button type="button" onclick="lmEdit(${i})" class="font-bold px-1.5 cursor-pointer">✎</button><button type="button" onclick="lmDel(${i})" class="font-bold text-red-600 px-1.5 cursor-pointer">✕</button></td></tr>`).join('') || `<tr><td class="p-3 text-slate-500" colspan="${L.head.length + 1}">Liste boş.</td></tr>`;
     }
-
-    function removeAparat() {
-      const id = document.getElementById('selectAparat').value;
-      const i = APARATS.findIndex(a => a.id === id && a.custom);
-      if (i < 0) return;
-      APARATS.splice(i, 1);
-      refreshAparatSelect('auto');
-      calculate();
+    function lmEdit(i) {
+      const L = LM[lmTab], o = i >= 0 ? L.list[i] : L.blank; lmIdx = i;
+      document.getElementById('lmFields').innerHTML = L.fields.map(([k, lab, ty, opts]) => {
+        const id = 'lmf_' + k, v = o[k] == null ? '' : o[k];
+        if (ty === 'check') return `<label class="col-span-2 flex items-center gap-2 text-xs font-semibold text-slate-700"><input type="checkbox" id="${id}" ${v ? 'checked' : ''}> ${lab}</label>`;
+        if (ty === 'sel') return `<div><label class="text-[10px] font-bold text-slate-600">${lab}</label><select id="${id}" class="w-full px-2 py-2 rounded-lg border border-slate-300 text-sm">${opts.map(([ov, ol]) => `<option value="${ov}" ${ov === v ? 'selected' : ''}>${ol}</option>`).join('')}</select></div>`;
+        return `<div class="${ty === 'text' ? 'col-span-2' : ''}"><label class="text-[10px] font-bold text-slate-600">${lab}</label><input id="${id}" type="text" ${ty === 'num' ? 'inputmode="decimal"' : ''} value="${String(v).replace('.', ',').replace(/"/g, '&quot;')}" class="w-full px-2 py-2 rounded-lg border border-slate-300 text-sm"></div>`;
+      }).join('');
+      document.getElementById('lmFormTitle').innerText = (i >= 0 ? 'Düzenle: ' : 'Yeni ekle: ') + L.t;
+      document.getElementById('lmForm').classList.remove('hidden');
+    }
+    function lmAfter() {
+      const L = LM[lmTab]; lsSet(L.key, L.list); normAp();
+      refreshAparatSelect(document.getElementById('selectAparat').value); refreshShrinkSelect(document.getElementById('selectShrink').value);
+      initPresetSelect(); initRefTable(); initRefStrip(); calculate(); lmRender();
+    }
+    function lmSave() {
+      const L = LM[lmTab], o = {};
+      L.fields.forEach(([k, , ty]) => { const el = document.getElementById('lmf_' + k); o[k] = ty === 'check' ? el.checked : ty === 'num' ? pf(el.value) : el.value.trim(); });
+      if (lmTab === 'kb') { if (!o.g) o.g = 'Özel'; if (!(o.i > 0)) delete o.i; }
+      if (lmTab === 'ap') o.name = o.name.toUpperCase();
+      if (!L.ok(o)) { alert(L.msg); return; }
+      if (lmIdx >= 0) { const cur = L.list[lmIdx]; Object.keys(cur).forEach(k => { if (k !== 'id') delete cur[k]; }); Object.assign(cur, o); } else L.list.push(L.make(o));
+      document.getElementById('lmForm').classList.add('hidden'); lmAfter();
+    }
+    function lmDel(i) {
+      const L = LM[lmTab]; if (L.list.length <= L.minRows) { alert('En az ' + L.minRows + ' satır kalmalı.'); return; }
+      if (!confirm('Bu satır silinsin mi?')) return;
+      L.list.splice(i, 1); lmAfter();
+    }
+    function lmReset() {
+      const L = LM[lmTab]; if (!confirm(L.t + ' listesi varsayılana dönsün mü?')) return;
+      L.list.splice(0, L.list.length, ...cl(L.def)); lmAfter();
     }
 
     // Tablodan taban adedini bul
@@ -595,7 +686,6 @@
       const palletBaseH = 15; // Sabit palet yüksekliği (cm); kalan yükseklik kat × aparat yüksekliği
       const selVal = document.getElementById('selectAparat').value;
       const manual = selVal === 'auto' ? null : (APARATS.find(a => a.id === selVal) || null);
-      document.getElementById('btnRemoveAparat').classList.toggle('hidden', !(manual && manual.custom));
 
       let outerCm = 25; let autoAp = null;
       let theoreticalOuter = 25;
@@ -612,8 +702,8 @@
         let calcW;
         if (manual) calcW = wFor(manual);
         else {
-          // Genişlik sınırına göre ilk uygun standart aparat (Yeni ≤40, Orta ≤50, Büyük ≤60 cm)
-          const std = APARATS.filter(a => !a.custom);
+          // Genişlik sınırına göre ilk uygun standart aparat (Küçük ≤40, Orta ≤50, Büyük ≤60 cm)
+          const std = autoAparats();
           autoAp = std.find(a => Math.round(wFor(a)) <= a.maxW) || std[std.length - 1];
           calcW = wFor(autoAp);
         }
@@ -687,7 +777,12 @@
       }
       extra.push(heavy ? { type: 'warning', text: `⚖️ Kangal ${coilKg} kg (50 kg üzeri): 5 sıra olacak şekilde paletlenecektir. Kat sayısı 5'e sabitlendi.` } : { type: 'info', text: '⚖️ 50 kg üzeri kangallar 5 sıra olacak şekilde paletlenecektir.' });
       if (aparat.maxW && Math.round(theoreticalOuter) > aparat.maxW) extra.push({ type: 'danger', text: `📏 Hesaplanan dış genişlik (${theoreticalOuter.toFixed(1)} cm), ${aparat.name} sınırını (${aparat.maxW} cm) aşıyor; daha büyük aparat veya daha kısa metraj seçin.` });
-      extra.push({ type: 'info', text: `🪵 ${palletName} (80×120 cm, 15 cm) • ${shrinkName} ile sarılacak.` });
+      const shr = pickShrink(outerCm, isExport, document.getElementById('selectShrink').value);
+      const shrTxt = shr.s ? shrinkLabel(shr.s) : shrinkName;
+      document.getElementById('noteShrink').innerHTML = shr.s ? `🎞️ <b>${shrTxt}</b><br><span class="text-blue-800">${isExport ? 'İhracat → şeffaf' : 'İç piyasa → Üntel baskılı'} • kangal ${outerCm} cm • film sınırı ${shr.s.maxOuter} cm${shr.manual ? ' • elle seçildi' : ' • otomatik'}</span>` : '🎞️ Shrink listesi boş. Listeleri düzenleyip ekleyin.';
+      if (shr.s && shr.over) extra.push({ type: 'danger', text: `🎞️ Kangal dış genişliği (${outerCm} cm), seçili shrink filminin sınırını (${shr.s.maxOuter} cm) aşıyor; daha geniş film seçin veya listeden sınırı düzeltin.` });
+      if (shr.s && shr.manual && (shr.s.tip === 'seffaf') !== isExport) extra.push({ type: 'warning', text: `🎞️ Seçilen shrink ${shr.s.tip === 'baskili' ? 'baskılı' : 'şeffaf'}; ${isExport ? 'ihracatta şeffaf' : 'iç piyasada baskılı'} kullanılması gerekir.` });
+      extra.push({ type: 'info', text: `🪵 ${palletName} (80×120 cm, 15 cm) • ${shrTxt} ile sarılacak.` });
       if (outerCm < aparat.inner + 2) extra.push({ type: 'danger', text: `🧰 Kangal dış çapı (${outerCm} cm) aparat göbeğine (${aparat.inner} cm) çok yakın; metraj/aparat seçimini kontrol edin.` });
       if (physicalBaseCount > tableBaseCount) extra.push({ type: 'warning', text: `📈 Maksimum verim modu: ${physicalBaseCount} adet yerleşiyor (PL-F-010 standardı ${tableBaseCount}). Shrink ve denge için sahada doğrulayın.` });
       // Fikir: 1-2 cm daha küçük sararak tabanda daha fazla kangal
@@ -1227,6 +1322,7 @@
     // Sayfa yüklendiğinde başlat
     window.addEventListener('DOMContentLoaded', () => {
       refreshAparatSelect('auto');
+      refreshShrinkSelect('auto');
       initPresetSelect();
       initRefTable();
       initRefStrip();
